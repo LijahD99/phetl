@@ -1,0 +1,76 @@
+{
+    "name": "lijahd/phetl",
+    "description": "A PHP ETL (Extract, Transform, Load) library for working with tabular data, inspired by Python's petl",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "etl",
+        "extract",
+        "transform",
+        "load",
+        "data",
+        "csv",
+        "table",
+        "pipeline",
+        "data-processing"
+    ],
+    "authors": [
+        {
+            "name": "Elijah Ide",
+            "email": "lijahide196@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5",
+        "phpstan/phpstan": "^1.10",
+        "phpstan/phpstan-strict-rules": "^1.5",
+        "friendsofphp/php-cs-fixer": "^3.40",
+        "mockery/mockery": "^1.6",
+        "pestphp/pest": "^2.30"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phetl\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Phetl\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "pest",
+        "test:unit": "pest --testsuite=Unit",
+        "test:integration": "pest --testsuite=Integration",
+        "test:coverage": "pest --coverage",
+        "phpstan": "phpstan analyse src tests --level=max",
+        "cs:check": "php-cs-fixer fix --dry-run --diff",
+        "cs:fix": "php-cs-fixer fix",
+        "quality": [
+            "@cs:check",
+            "@phpstan",
+            "@test"
+        ]
+    },
+    "scripts-descriptions": {
+        "test": "Run all tests",
+        "test:unit": "Run unit tests only",
+        "test:integration": "Run integration tests only",
+        "test:coverage": "Run tests with coverage report",
+        "phpstan": "Run static analysis",
+        "cs:check": "Check code style (PSR-12)",
+        "cs:fix": "Fix code style issues",
+        "quality": "Run all quality checks"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
