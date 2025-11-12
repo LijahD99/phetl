@@ -109,15 +109,14 @@ final class RestApiExtractor implements ExtractorInterface
         }
 
         // Parse JSON
-        $data = json_decode($mockResponse, true);
+        $response = json_decode($mockResponse, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new InvalidArgumentException('Invalid JSON: ' . json_last_error_msg());
         }
 
-        if (! is_array($data)) {
-            throw new InvalidArgumentException('Response must be a JSON array');
-        }
+        // Extract data array from response using data_path if configured
+        $data = $this->extractDataFromResponse($response);
 
         if ($data === []) {
             return;
@@ -130,15 +129,17 @@ final class RestApiExtractor implements ExtractorInterface
             }
         }
 
-        // Extract all unique field names
-        $fields = $this->extractFieldNames($data);
+        // Check if field mapping is configured
+        if (isset($this->config['mapping']['fields'])) {
+            yield from $this->extractWithFieldMapping($data);
+        } else {
+            // No field mapping - use original field names
+            $fields = $this->extractFieldNames($data);
+            yield array_values($fields);
 
-        // Yield header row
-        yield array_values($fields);
-
-        // Yield data rows
-        foreach ($data as $row) {
-            yield $this->normalizeRow($row, $fields);
+            foreach ($data as $row) {
+                yield $this->normalizeRow($row, $fields);
+            }
         }
     }
 
@@ -282,7 +283,14 @@ final class RestApiExtractor implements ExtractorInterface
                 }
 
                 // Extract data array from response
-                $data = $dataPath ? ($response[$dataPath] ?? []) : $response;
+                if ($dataPath) {
+                    $data = $this->getNestedValue($response, $dataPath);
+                    if (! is_array($data)) {
+                        $data = [];
+                    }
+                } else {
+                    $data = $response;
+                }
 
                 if ($data === []) {
                     break;
@@ -294,7 +302,7 @@ final class RestApiExtractor implements ExtractorInterface
                 }
 
                 // Get next cursor
-                $cursor = $response[$cursorPath] ?? null;
+                $cursor = $this->getNestedValue($response, $cursorPath);
                 if ($cursor === null) {
                     break;
                 }
@@ -314,31 +322,55 @@ final class RestApiExtractor implements ExtractorInterface
      */
     private function processPageData(array $data, bool &$headerYielded, array &$allFields): iterable
     {
-        // Extract fields from this page
-        foreach ($data as $row) {
-            if (! is_array($row)) {
-                continue;
+        // Check if field mapping is configured
+        if (isset($this->config['mapping']['fields'])) {
+            $fieldMapping = $this->config['mapping']['fields'];
+
+            // Yield header if not yet yielded
+            if (! $headerYielded) {
+                yield array_keys($fieldMapping);
             }
 
-            foreach (array_keys($row) as $key) {
-                if (! in_array($key, $allFields, true)) {
-                    $allFields[] = $key;
+            // Yield data rows with mapped values
+            foreach ($data as $row) {
+                if (! is_array($row)) {
+                    throw new InvalidArgumentException('Response must contain objects');
+                }
+
+                $mappedRow = [];
+                foreach ($fieldMapping as $targetField => $sourcePath) {
+                    $mappedRow[] = $this->getNestedValue($row, $sourcePath);
+                }
+
+                yield $mappedRow;
+            }
+        } else {
+            // No field mapping - extract fields from data
+            foreach ($data as $row) {
+                if (! is_array($row)) {
+                    continue;
+                }
+
+                foreach (array_keys($row) as $key) {
+                    if (! in_array($key, $allFields, true)) {
+                        $allFields[] = $key;
+                    }
                 }
             }
-        }
 
-        // Yield header if not yet yielded
-        if (! $headerYielded) {
-            yield array_values($allFields);
-        }
-
-        // Yield data rows
-        foreach ($data as $row) {
-            if (! is_array($row)) {
-                throw new InvalidArgumentException('Response must contain objects');
+            // Yield header if not yet yielded
+            if (! $headerYielded) {
+                yield array_values($allFields);
             }
 
-            yield $this->normalizeRow($row, $allFields);
+            // Yield data rows
+            foreach ($data as $row) {
+                if (! is_array($row)) {
+                    throw new InvalidArgumentException('Response must contain objects');
+                }
+
+                yield $this->normalizeRow($row, $allFields);
+            }
         }
     }
 
@@ -372,6 +404,97 @@ final class RestApiExtractor implements ExtractorInterface
         }
 
         return $url;
+    }
+
+    /**
+     * Extract data array from response using data_path.
+     *
+     * @param mixed $response
+     * @return array<int, array<string, mixed>>
+     */
+    private function extractDataFromResponse(mixed $response): array
+    {
+        if (! is_array($response)) {
+            throw new InvalidArgumentException('Response must be a JSON array or object');
+        }
+
+        // Check for data_path in mapping config
+        $dataPath = $this->config['mapping']['data_path'] ?? null;
+
+        if ($dataPath === null) {
+            // No data_path - response should be array of objects
+            return $response;
+        }
+
+        // Navigate through nested structure using dot notation
+        $parts = explode('.', $dataPath);
+        $current = $response;
+
+        foreach ($parts as $part) {
+            if (! is_array($current) || ! isset($current[$part])) {
+                throw new InvalidArgumentException("Data path '{$dataPath}' not found in response");
+            }
+            $current = $current[$part];
+        }
+
+        if (! is_array($current)) {
+            throw new InvalidArgumentException("Data path '{$dataPath}' must point to an array");
+        }
+
+        return $current;
+    }
+
+    /**
+     * Extract with field mapping configuration.
+     *
+     * @param array<int, array<string, mixed>> $data
+     * @return iterable<int, array<int|string, mixed>>
+     */
+    private function extractWithFieldMapping(array $data): iterable
+    {
+        $fieldMapping = $this->config['mapping']['fields'];
+
+        // Yield header with mapped field names
+        yield array_keys($fieldMapping);
+
+        // Yield data rows with mapped values
+        foreach ($data as $row) {
+            $mappedRow = [];
+
+            foreach ($fieldMapping as $targetField => $sourcePath) {
+                $mappedRow[] = $this->getNestedValue($row, $sourcePath);
+            }
+
+            yield $mappedRow;
+        }
+    }
+
+    /**
+     * Get value from nested array using dot notation.
+     *
+     * @param array<string, mixed> $data
+     * @param string $path
+     * @return mixed
+     */
+    private function getNestedValue(array $data, string $path): mixed
+    {
+        // If no dot notation, return direct value
+        if (! str_contains($path, '.')) {
+            return $data[$path] ?? null;
+        }
+
+        // Navigate through nested structure
+        $parts = explode('.', $path);
+        $current = $data;
+
+        foreach ($parts as $part) {
+            if (! is_array($current) || ! isset($current[$part])) {
+                return null;
+            }
+            $current = $current[$part];
+        }
+
+        return $current;
     }
 
     /**

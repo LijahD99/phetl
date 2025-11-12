@@ -551,3 +551,196 @@ describe('RestApiExtractor - Pagination', function () {
         expect($urls[0])->toContain('limit=');
     });
 });
+
+describe('RestApiExtractor - Response Mapping', function () {
+    it('extracts data from nested response using data_path', function () {
+        $response = json_encode([
+            'data' => [
+                ['id' => 1, 'name' => 'Alice'],
+                ['id' => 2, 'name' => 'Bob'],
+            ],
+            'meta' => ['total' => 2],
+        ]);
+
+        $extractor = new RestApiExtractor('https://api.example.com/users', [
+            '_mock_response' => $response,
+            'mapping' => [
+                'data_path' => 'data',
+            ],
+        ]);
+
+        $result = iterator_to_array($extractor->extract());
+
+        expect($result)->toBe([
+            ['id', 'name'],
+            [1, 'Alice'],
+            [2, 'Bob'],
+        ]);
+    });
+
+    it('extracts deeply nested data using dot notation', function () {
+        $response = json_encode([
+            'response' => [
+                'users' => [
+                    ['id' => 1, 'name' => 'Alice'],
+                    ['id' => 2, 'name' => 'Bob'],
+                ],
+            ],
+        ]);
+
+        $extractor = new RestApiExtractor('https://api.example.com/users', [
+            '_mock_response' => $response,
+            'mapping' => [
+                'data_path' => 'response.users',
+            ],
+        ]);
+
+        $result = iterator_to_array($extractor->extract());
+
+        expect($result)->toBe([
+            ['id', 'name'],
+            [1, 'Alice'],
+            [2, 'Bob'],
+        ]);
+    });
+
+    it('maps nested fields to flat structure', function () {
+        $response = json_encode([
+            [
+                'user_id' => 1,
+                'profile' => ['full_name' => 'Alice Smith'],
+                'contact' => ['email' => 'alice@example.com'],
+            ],
+            [
+                'user_id' => 2,
+                'profile' => ['full_name' => 'Bob Jones'],
+                'contact' => ['email' => 'bob@example.com'],
+            ],
+        ]);
+
+        $extractor = new RestApiExtractor('https://api.example.com/users', [
+            '_mock_response' => $response,
+            'mapping' => [
+                'fields' => [
+                    'id' => 'user_id',
+                    'name' => 'profile.full_name',
+                    'email' => 'contact.email',
+                ],
+            ],
+        ]);
+
+        $result = iterator_to_array($extractor->extract());
+
+        expect($result)->toBe([
+            ['id', 'name', 'email'],
+            [1, 'Alice Smith', 'alice@example.com'],
+            [2, 'Bob Jones', 'bob@example.com'],
+        ]);
+    });
+
+    it('handles missing nested fields gracefully', function () {
+        $response = json_encode([
+            [
+                'user_id' => 1,
+                'profile' => ['full_name' => 'Alice Smith'],
+            ],
+            [
+                'user_id' => 2,
+                'contact' => ['email' => 'bob@example.com'],
+            ],
+        ]);
+
+        $extractor = new RestApiExtractor('https://api.example.com/users', [
+            '_mock_response' => $response,
+            'mapping' => [
+                'fields' => [
+                    'id' => 'user_id',
+                    'name' => 'profile.full_name',
+                    'email' => 'contact.email',
+                ],
+            ],
+        ]);
+
+        $result = iterator_to_array($extractor->extract());
+
+        expect($result)->toBe([
+            ['id', 'name', 'email'],
+            [1, 'Alice Smith', null],
+            [2, null, 'bob@example.com'],
+        ]);
+    });
+
+    it('combines data_path and field mapping', function () {
+        $response = json_encode([
+            'data' => [
+                [
+                    'user_id' => 1,
+                    'profile' => ['name' => 'Alice'],
+                ],
+                [
+                    'user_id' => 2,
+                    'profile' => ['name' => 'Bob'],
+                ],
+            ],
+        ]);
+
+        $extractor = new RestApiExtractor('https://api.example.com/users', [
+            '_mock_response' => $response,
+            'mapping' => [
+                'data_path' => 'data',
+                'fields' => [
+                    'id' => 'user_id',
+                    'name' => 'profile.name',
+                ],
+            ],
+        ]);
+
+        $result = iterator_to_array($extractor->extract());
+
+        expect($result)->toBe([
+            ['id', 'name'],
+            [1, 'Alice'],
+            [2, 'Bob'],
+        ]);
+    });
+
+    it('works without mapping config', function () {
+        $response = json_encode([
+            ['id' => 1, 'name' => 'Alice'],
+        ]);
+
+        $extractor = new RestApiExtractor('https://api.example.com/users', [
+            '_mock_response' => $response,
+        ]);
+
+        $result = iterator_to_array($extractor->extract());
+
+        expect($result)->toBe([
+            ['id', 'name'],
+            [1, 'Alice'],
+        ]);
+    });
+
+    it('handles array values in nested fields', function () {
+        $response = json_encode([
+            [
+                'id' => 1,
+                'tags' => ['php', 'laravel'],
+            ],
+        ]);
+
+        $extractor = new RestApiExtractor('https://api.example.com/users', [
+            '_mock_response' => $response,
+            'mapping' => [
+                'fields' => [
+                    'id' => 'id',
+                    'tags' => 'tags',
+                ],
+            ],
+        ]);
+
+        $result = iterator_to_array($extractor->extract());
+
+        expect($result[1][1])->toBe(['php', 'laravel']);
+    });
+});
