@@ -2,7 +2,7 @@
 
 ## Current Status: Active Development ✅
 
-### Completed Features (554 tests, 1,065 assertions)
+### Completed Features (589 tests, 1,145 assertions)
 
 #### ✅ Core I/O Layer
 - **ArrayExtractor** - Extract from PHP arrays (7 tests)
@@ -14,16 +14,27 @@
   - Pagination: Offset-based, cursor-based, page-based with max_pages limit
   - Response mapping: Extract nested data with data_path, flatten with field mapping
   - Mock testing support for reliable testing
+- **ExcelExtractor** - Extract from Excel files (.xlsx) with sheet selection (15 tests)
+  - Read from specific sheets by name or index
+  - Lazy row-by-row extraction via Generator
+  - Preserve data types (null, boolean, numeric, string)
+  - Evaluate formulas using getCalculatedValue()
 - **CsvLoader** - Load to CSV files (13 tests)
 - **JsonLoader** - Load to JSON files (12 tests)
 - **DatabaseLoader** - Load to database tables (12 tests)
+- **ExcelLoader** - Load to Excel files (.xlsx) with sheet selection (13 tests)
+  - Write to specific sheets by name or index
+  - Preserve data types (null, boolean, numeric, string)
+  - Auto-create parent directories
+  - Handle wide rows and large datasets efficiently
 
 #### ✅ Table Core
-- **Table.php** - Main fluent API class with factory methods (17 tests)
-  - fromArray(), fromCsv(), fromJson(), fromDatabase(), fromRestApi()
+- **Table.php** - Main fluent API class with factory methods (24 tests)
+  - fromArray(), fromCsv(), fromJson(), fromDatabase(), fromRestApi(), fromExcel()
+  - toArray(), toCsv(), toJson(), toDatabase(), toExcel()
 - Lazy evaluation via generators
 - Method chaining support
-- Multiple output formats (toArray, toCsv, toJson, toDatabase)
+- Multiple output formats including Excel
 
 #### ✅ Row Transformations
 - **RowSelector.php** - head(), tail(), slice(), skip() (19 tests)
@@ -108,7 +119,7 @@
 
 ✅ **PSR-12 Compliant** - All code follows PSR-12 standards
 ✅ **PHPStan Max Level** - Passing static analysis at maximum level
-✅ **Comprehensive Tests** - 554 tests, 1,065 assertions, all passing
+✅ **Comprehensive Tests** - 589 tests, 1,145 assertions, all passing
 ✅ **Lazy Evaluation** - Generators for memory efficiency
 ✅ **Dual API** - Improved names + petl-compatible aliases
 ✅ **Fluent Chaining** - All transformations support method chaining
@@ -129,18 +140,29 @@
   - All 23 tests passing
 - ✅ RESTful API extractor with authentication, pagination, and response mapping
 
-### Planned - Phase 6
-- [ ] Additional I/O formats (Excel, Parquet)
+### Completed - Phase 6 ✅
+- ✅ Excel file support (.xlsx format)
+  - ExcelExtractor: Read Excel files with sheet selection (15 tests)
+  - ExcelLoader: Write Excel files with sheet selection (13 tests)
+  - Table integration: fromExcel() and toExcel() methods (7 tests)
+  - Data type preservation (null, boolean, numeric, string)
+  - Formula evaluation in extraction
+  - Comprehensive example file (examples/excel-operations.php)
+  - PHPSpreadsheet 5.2.0 dependency added
+
+### Planned - Phase 7
+- [ ] Additional I/O formats (Parquet, XML)
 - [ ] Performance optimizations
 - [ ] Rate limiting and retry logic for REST API extractor
 
 ## Development Stats
 
-- **Total Tests**: 554 (4 skipped - Windows file permissions)
-- **Total Assertions**: 1,065
+- **Total Tests**: 589 (4 skipped - Windows file permissions)
+- **Total Assertions**: 1,145
 - **Test Coverage**: Unit + Integration
 - **Code Quality**: PHPStan max level, PSR-12 compliant
-- **Files Created**: 40+ source files, 20+ test files
+- **Files Created**: 45+ source files, 25+ test files
+- **Dependencies**: PHPSpreadsheet 5.2.0 for Excel support
 
 ## Project Standards Maintained
 
