@@ -11,6 +11,7 @@ use Phetl\Extract\Extractors\ArrayExtractor;
 use Phetl\Extract\Extractors\CsvExtractor;
 use Phetl\Extract\Extractors\DatabaseExtractor;
 use Phetl\Extract\Extractors\JsonExtractor;
+use Phetl\Extract\Extractors\RestApiExtractor;
 use Phetl\Load\Loaders\CsvLoader;
 use Phetl\Load\Loaders\DatabaseLoader;
 use Phetl\Load\Loaders\JsonLoader;
@@ -100,6 +101,17 @@ class Table implements IteratorAggregate
     public static function fromDatabase(PDO $pdo, string $query, array $params = []): self
     {
         $extractor = new DatabaseExtractor($pdo, $query, $params);
+        return new self($extractor->extract());
+    }
+
+    /**
+     * Create a Table from a RESTful API.
+     *
+     * @param array<string, mixed> $config
+     */
+    public static function fromRestApi(string $url, array $config = []): self
+    {
+        $extractor = new RestApiExtractor($url, $config);
         return new self($extractor->extract());
     }
 

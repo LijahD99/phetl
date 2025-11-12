@@ -242,4 +242,80 @@ class TableTest extends TestCase
         $this->assertNotFalse($stmt);
         $this->assertEquals(2, $stmt->fetchColumn());
     }
+
+    public function test_it_creates_table_from_rest_api(): void
+    {
+        $table = Table::fromRestApi('https://api.example.com/users', [
+            '_mock_response' => json_encode([
+                ['id' => 1, 'name' => 'Alice'],
+                ['id' => 2, 'name' => 'Bob'],
+            ]),
+        ]);
+
+        $result = $table->toArray();
+        $this->assertCount(3, $result); // header + 2 rows
+        $this->assertEquals(['id', 'name'], $result[0]);
+        $this->assertEquals([1, 'Alice'], $result[1]);
+        $this->assertEquals([2, 'Bob'], $result[2]);
+    }
+
+    public function test_it_creates_table_from_rest_api_with_auth(): void
+    {
+        $table = Table::fromRestApi('https://api.example.com/users', [
+            '_mock_response' => json_encode([
+                ['id' => 1, 'name' => 'Alice'],
+            ]),
+            'auth' => [
+                'type' => 'bearer',
+                'token' => 'test-token',
+            ],
+        ]);
+
+        $result = $table->toArray();
+        $this->assertCount(2, $result);
+        $this->assertEquals([1, 'Alice'], $result[1]);
+    }
+
+    public function test_it_creates_table_from_rest_api_with_pagination(): void
+    {
+        $table = Table::fromRestApi('https://api.example.com/users', [
+            '_mock_responses' => [
+                json_encode([['id' => 1, 'name' => 'Alice']]),
+                json_encode([['id' => 2, 'name' => 'Bob']]),
+                json_encode([]),
+            ],
+            'pagination' => [
+                'type' => 'offset',
+                'page_size' => 1,
+            ],
+        ]);
+
+        $result = $table->toArray();
+        $this->assertCount(3, $result);
+        $this->assertEquals([1, 'Alice'], $result[1]);
+        $this->assertEquals([2, 'Bob'], $result[2]);
+    }
+
+    public function test_it_creates_table_from_rest_api_with_mapping(): void
+    {
+        $table = Table::fromRestApi('https://api.example.com/users', [
+            '_mock_response' => json_encode([
+                'data' => [
+                    ['user_id' => 1, 'profile' => ['name' => 'Alice']],
+                ],
+            ]),
+            'mapping' => [
+                'data_path' => 'data',
+                'fields' => [
+                    'id' => 'user_id',
+                    'name' => 'profile.name',
+                ],
+            ],
+        ]);
+
+        $result = $table->toArray();
+        $this->assertCount(2, $result);
+        $this->assertEquals(['id', 'name'], $result[0]);
+        $this->assertEquals([1, 'Alice'], $result[1]);
+    }
 }
