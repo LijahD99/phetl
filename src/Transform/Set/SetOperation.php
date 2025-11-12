@@ -43,7 +43,7 @@ class SetOperation
                         // Validate header matches
                         if ($row !== $expectedHeader) {
                             throw new InvalidArgumentException(
-                                "Table " . ($tableIndex + 1) . " has different header structure"
+                                "Table " . ((int)$tableIndex + 1) . " has different header structure"
                             );
                         }
                     }

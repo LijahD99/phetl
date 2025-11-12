@@ -17,6 +17,7 @@ use Phetl\Load\Loaders\JsonLoader;
 use Phetl\Transform\Columns\ColumnAdder;
 use Phetl\Transform\Columns\ColumnRenamer;
 use Phetl\Transform\Columns\ColumnSelector;
+use Phetl\Transform\Joins\Join;
 use Phetl\Transform\Rows\RowFilter;
 use Phetl\Transform\Rows\RowSelector;
 use Phetl\Transform\Rows\RowSorter;
@@ -593,5 +594,41 @@ class Table implements IteratorAggregate
         }
 
         return new self(SetOperation::merge(...$iterables));
+    }
+
+    /**
+     * Perform an inner join with another table.
+     *
+     * @param Table $right Right table to join
+     * @param string|array<string> $leftKey Left table key(s)
+     * @param string|array<string>|null $rightKey Right table key(s), defaults to $leftKey
+     */
+    public function innerJoin(self $right, string|array $leftKey, string|array|null $rightKey = null): self
+    {
+        return new self(Join::inner($this->materializedData, $right->materializedData, $leftKey, $rightKey));
+    }
+
+    /**
+     * Perform a left join with another table.
+     *
+     * @param Table $right Right table to join
+     * @param string|array<string> $leftKey Left table key(s)
+     * @param string|array<string>|null $rightKey Right table key(s), defaults to $leftKey
+     */
+    public function leftJoin(self $right, string|array $leftKey, string|array|null $rightKey = null): self
+    {
+        return new self(Join::left($this->materializedData, $right->materializedData, $leftKey, $rightKey));
+    }
+
+    /**
+     * Perform a right join with another table.
+     *
+     * @param Table $right Right table to join
+     * @param string|array<string> $leftKey Left table key(s)
+     * @param string|array<string>|null $rightKey Right table key(s), defaults to $leftKey
+     */
+    public function rightJoin(self $right, string|array $leftKey, string|array|null $rightKey = null): self
+    {
+        return new self(Join::right($this->materializedData, $right->materializedData, $leftKey, $rightKey));
     }
 }
