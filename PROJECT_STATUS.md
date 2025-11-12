@@ -2,19 +2,25 @@
 
 ## Current Status: Active Development ✅
 
-### Completed Features (508 tests, 1,014 assertions)
+### Completed Features (551 tests, 1,065 assertions)
 
 #### ✅ Core I/O Layer
 - **ArrayExtractor** - Extract from PHP arrays (7 tests)
 - **CsvExtractor** - Extract from CSV files with custom delimiters/enclosures (13 tests)
 - **JsonExtractor** - Extract from JSON files (12 tests)
 - **DatabaseExtractor** - Extract via PDO queries (11 tests)
+- **RestApiExtractor** - Extract from RESTful APIs with auth, pagination, and mapping (39 tests)
+  - Authentication: Bearer tokens, API keys (header/query), Basic auth
+  - Pagination: Offset-based, cursor-based, page-based with max_pages limit
+  - Response mapping: Extract nested data with data_path, flatten with field mapping
+  - Mock testing support for reliable testing
 - **CsvLoader** - Load to CSV files (13 tests)
 - **JsonLoader** - Load to JSON files (12 tests)
 - **DatabaseLoader** - Load to database tables (12 tests)
 
 #### ✅ Table Core
-- **Table.php** - Main fluent API class with factory methods (13 tests)
+- **Table.php** - Main fluent API class with factory methods (17 tests)
+  - fromArray(), fromCsv(), fromJson(), fromDatabase(), fromRestApi()
 - Lazy evaluation via generators
 - Method chaining support
 - Multiple output formats (toArray, toCsv, toJson, toDatabase)
@@ -102,7 +108,7 @@
 
 ✅ **PSR-12 Compliant** - All code follows PSR-12 standards
 ✅ **PHPStan Max Level** - Passing static analysis at maximum level
-✅ **Comprehensive Tests** - 508 tests, 1,014 assertions (3 pending refinements)
+✅ **Comprehensive Tests** - 551 tests, 1,065 assertions (3 pending refinements)
 ✅ **Lazy Evaluation** - Generators for memory efficiency
 ✅ **Dual API** - Improved names + petl-compatible aliases
 ✅ **Fluent Chaining** - All transformations support method chaining
@@ -116,20 +122,21 @@
 - ✅ Deduplication (unique, distinct, duplicates)
 - ✅ Validation framework
 
-### In Progress - Phase 5
-- ⚙️ Window functions (lead, lag, rank, denseRank, rowNumber, percentRank) - 87% complete
+### Completed - Phase 5 ✅
+- ✅ Window functions (lead, lag, rank, denseRank, rowNumber, percentRank) - Core implementation complete
   - Core functionality implemented
-  - Pending: Partition row-order preservation refinement
+  - Pending: Partition row-order preservation refinement (3 tests)
+- ✅ RESTful API extractor with authentication, pagination, and response mapping
 
-### Planned - Phase 5
+### Planned - Phase 6
 - [ ] Additional I/O formats (Excel, Parquet)
 - [ ] Performance optimizations
-- [ ] RESTful API extractor
+- [ ] Rate limiting and retry logic for REST API extractor
 
 ## Development Stats
 
-- **Total Tests**: 508 (4 skipped, 3 pending refinements)
-- **Total Assertions**: 1,014
+- **Total Tests**: 551 (4 skipped, 3 pending refinements)
+- **Total Assertions**: 1,065
 - **Test Coverage**: Unit + Integration
 - **Code Quality**: PHPStan max level, PSR-12 compliant
 - **Files Created**: 40+ source files, 20+ test files
@@ -265,12 +272,18 @@ composer quality           # All checks
 
 ## RESTful API Extractor
 
-Noted in **ROADMAP.md** for future discussion:
-- Authentication strategies
-- Pagination handling
-- Response mapping
-- Rate limiting
-- Error handling
+✅ **Implemented** in Phase 5:
+- `Table::fromRestApi($url, $config)` factory method
+- Authentication: Bearer tokens, API keys (header/query), Basic auth
+- Pagination: offset/limit, cursor, page-based with max_pages
+- Response mapping: Extract nested data, flatten fields with dot notation
+- Mock response testing for reliable test suites
+- See `docs/rest-api-extractor-design.md` for detailed configuration
+
+Future enhancements:
+- Rate limiting with configurable delays
+- Retry logic with exponential backoff
+- Request timeout configuration
 
 ## Summary
 
