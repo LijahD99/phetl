@@ -19,6 +19,7 @@ use Phetl\Transform\Columns\ColumnRenamer;
 use Phetl\Transform\Columns\ColumnSelector;
 use Phetl\Transform\Rows\RowFilter;
 use Phetl\Transform\Rows\RowSelector;
+use Phetl\Transform\Rows\RowSorter;
 use Phetl\Transform\Values\ValueConverter;
 use Phetl\Transform\Values\ValueReplacer;
 use PDO;
@@ -237,6 +238,37 @@ class Table implements IteratorAggregate
     public function skip(int $count): self
     {
         return new self(RowSelector::skip($this->materializedData, $count));
+    }
+
+    /**
+     * Sort rows by one or more fields.
+     *
+     * @param string|array<string>|\Closure $key Field name, array of fields, or custom comparator
+     * @param bool $reverse Sort in descending order
+     */
+    public function sort(string|array|\Closure $key, bool $reverse = false): self
+    {
+        return new self(RowSorter::sort($this->materializedData, $key, $reverse));
+    }
+
+    /**
+     * Sort rows by field(s) in ascending order.
+     *
+     * @param string ...$fields Field names to sort by
+     */
+    public function sortBy(string ...$fields): self
+    {
+        return new self(RowSorter::sort($this->materializedData, $fields, false));
+    }
+
+    /**
+     * Sort rows by field(s) in descending order.
+     *
+     * @param string ...$fields Field names to sort by
+     */
+    public function sortByDesc(string ...$fields): self
+    {
+        return new self(RowSorter::sort($this->materializedData, $fields, true));
     }
 
     /**
