@@ -20,6 +20,7 @@ use Phetl\Transform\Columns\ColumnRenamer;
 use Phetl\Transform\Columns\ColumnSelector;
 use Phetl\Transform\Joins\Join;
 use Phetl\Transform\Reshaping\Reshaper;
+use Phetl\Transform\Rows\Deduplicator;
 use Phetl\Transform\Rows\RowFilter;
 use Phetl\Transform\Rows\RowSelector;
 use Phetl\Transform\Rows\RowSorter;
@@ -734,5 +735,65 @@ class Table implements IteratorAggregate
     public function transpose(): self
     {
         return new self(Reshaper::transpose($this->materializedData));
+    }
+
+    // =================================================================
+    // Deduplication Operations
+    // =================================================================
+
+    /**
+     * Remove duplicate rows, keeping only distinct rows.
+     *
+     * @param string|array<string>|null $fields Field(s) to check for uniqueness (null = all fields)
+     * @return self
+     */
+    public function distinct(string|array|null $fields = null): self
+    {
+        return new self(Deduplicator::distinct($this->materializedData, $fields));
+    }
+
+    /**
+     * Alias for distinct - petl compatibility.
+     *
+     * @param string|array<string>|null $fields Field(s) to check for uniqueness
+     * @return self
+     */
+    public function unique(string|array|null $fields = null): self
+    {
+        return new self(Deduplicator::unique($this->materializedData, $fields));
+    }
+
+    /**
+     * Return only duplicate rows (rows that appear more than once).
+     *
+     * @param string|array<string>|null $fields Field(s) to check for duplicates (null = all fields)
+     * @return self
+     */
+    public function duplicates(string|array|null $fields = null): self
+    {
+        return new self(Deduplicator::duplicates($this->materializedData, $fields));
+    }
+
+    /**
+     * Count occurrences of each unique row.
+     *
+     * @param string|array<string>|null $fields Field(s) to check for uniqueness (null = all fields)
+     * @param string $countField Name for the count column (default: 'count')
+     * @return self
+     */
+    public function countDistinct(string|array|null $fields = null, string $countField = 'count'): self
+    {
+        return new self(Deduplicator::countDistinct($this->materializedData, $fields, $countField));
+    }
+
+    /**
+     * Check if all rows are unique.
+     *
+     * @param string|array<string>|null $fields Field(s) to check for uniqueness (null = all fields)
+     * @return bool
+     */
+    public function isUnique(string|array|null $fields = null): bool
+    {
+        return Deduplicator::isUnique($this->materializedData, $fields);
     }
 }
