@@ -17,6 +17,7 @@ use Phetl\Load\Loaders\JsonLoader;
 use Phetl\Transform\Columns\ColumnAdder;
 use Phetl\Transform\Columns\ColumnRenamer;
 use Phetl\Transform\Columns\ColumnSelector;
+use Phetl\Transform\Rows\RowFilter;
 use Phetl\Transform\Rows\RowSelector;
 use PDO;
 use Traversable;
@@ -322,5 +323,133 @@ class Table implements IteratorAggregate
     public function addRowNumbers(string $columnName = 'row_number'): self
     {
         return new self(ColumnAdder::addRowNumbers($this->materializedData, $columnName));
+    }
+
+    /**
+     * Filter rows using a custom predicate function.
+     *
+     * @param \Closure $predicate Function(array $row): bool
+     */
+    public function filter(\Closure $predicate): self
+    {
+        return new self(RowFilter::filter($this->materializedData, $predicate));
+    }
+
+    /**
+     * Alias for filter (petl compatibility).
+     *
+     * @param \Closure $predicate Function(array $row): bool
+     */
+    public function select(\Closure $predicate): self
+    {
+        return $this->filter($predicate);
+    }
+
+    /**
+     * Filter rows where a field equals a value.
+     */
+    public function whereEquals(string $field, mixed $value): self
+    {
+        return new self(RowFilter::whereEquals($this->materializedData, $field, $value));
+    }
+
+    /**
+     * Filter rows where a field does not equal a value.
+     */
+    public function whereNotEquals(string $field, mixed $value): self
+    {
+        return new self(RowFilter::whereNotEquals($this->materializedData, $field, $value));
+    }
+
+    /**
+     * Filter rows where a field is greater than a value.
+     */
+    public function whereGreaterThan(string $field, int|float $value): self
+    {
+        return new self(RowFilter::whereGreaterThan($this->materializedData, $field, $value));
+    }
+
+    /**
+     * Filter rows where a field is less than a value.
+     */
+    public function whereLessThan(string $field, int|float $value): self
+    {
+        return new self(RowFilter::whereLessThan($this->materializedData, $field, $value));
+    }
+
+    /**
+     * Filter rows where a field is greater than or equal to a value.
+     */
+    public function whereGreaterThanOrEqual(string $field, int|float $value): self
+    {
+        return new self(RowFilter::whereGreaterThanOrEqual($this->materializedData, $field, $value));
+    }
+
+    /**
+     * Filter rows where a field is less than or equal to a value.
+     */
+    public function whereLessThanOrEqual(string $field, int|float $value): self
+    {
+        return new self(RowFilter::whereLessThanOrEqual($this->materializedData, $field, $value));
+    }
+
+    /**
+     * Filter rows where a field's value is in an array.
+     *
+     * @param array<mixed> $values
+     */
+    public function whereIn(string $field, array $values): self
+    {
+        return new self(RowFilter::whereIn($this->materializedData, $field, $values));
+    }
+
+    /**
+     * Filter rows where a field's value is not in an array.
+     *
+     * @param array<mixed> $values
+     */
+    public function whereNotIn(string $field, array $values): self
+    {
+        return new self(RowFilter::whereNotIn($this->materializedData, $field, $values));
+    }
+
+    /**
+     * Filter rows where a field is null.
+     */
+    public function whereNull(string $field): self
+    {
+        return new self(RowFilter::whereNull($this->materializedData, $field));
+    }
+
+    /**
+     * Filter rows where a field is not null.
+     */
+    public function whereNotNull(string $field): self
+    {
+        return new self(RowFilter::whereNotNull($this->materializedData, $field));
+    }
+
+    /**
+     * Filter rows where a field value is true.
+     */
+    public function whereTrue(string $field): self
+    {
+        return new self(RowFilter::whereTrue($this->materializedData, $field));
+    }
+
+    /**
+     * Filter rows where a field value is false.
+     */
+    public function whereFalse(string $field): self
+    {
+        return new self(RowFilter::whereFalse($this->materializedData, $field));
+    }
+
+    /**
+     * Filter rows where a string field contains a substring.
+     */
+    public function whereContains(string $field, string $substring): self
+    {
+        return new self(RowFilter::whereContains($this->materializedData, $field, $substring));
     }
 }

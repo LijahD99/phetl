@@ -33,14 +33,14 @@ class ColumnSelector
             if (!$headerProcessed) {
                 // First row is header - build index mapping
                 $columnIndices = self::buildColumnIndices($row, $columns);
-                
+
                 // Yield selected header columns
                 $selectedHeader = [];
                 foreach ($columnIndices as $index) {
                     $selectedHeader[] = $row[$index];
                 }
                 yield $selectedHeader;
-                
+
                 $headerProcessed = true;
                 continue;
             }
@@ -79,14 +79,14 @@ class ColumnSelector
             if (!$headerProcessed) {
                 // First row is header - determine which columns to keep
                 $keepIndices = self::buildKeepIndices($row, $columns);
-                
+
                 // Yield remaining header columns
                 $remainingHeader = [];
                 foreach ($keepIndices as $index) {
                     $remainingHeader[] = $row[$index];
                 }
                 yield $remainingHeader;
-                
+
                 $headerProcessed = true;
                 continue;
             }
@@ -112,17 +112,17 @@ class ColumnSelector
     private static function buildColumnIndices(array $header, array $columns): array
     {
         $indices = [];
-        
+
         foreach ($columns as $column) {
             $index = array_search($column, $header, true);
-            
+
             if ($index === false) {
                 throw new InvalidArgumentException("Column '$column' not found in header");
             }
-            
+
             $indices[] = $index;
         }
-        
+
         return $indices;
     }
 
@@ -136,13 +136,13 @@ class ColumnSelector
     private static function buildKeepIndices(array $header, array $columnsToRemove): array
     {
         $keepIndices = [];
-        
+
         foreach ($header as $index => $column) {
             if (!in_array($column, $columnsToRemove, true)) {
                 $keepIndices[] = $index;
             }
         }
-        
+
         return $keepIndices;
     }
 }
