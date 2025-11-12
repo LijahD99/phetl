@@ -112,6 +112,56 @@ public function test_specific_behavior_under_specific_conditions(): void
 }
 ```
 
+### Critical PHP Generator Gotcha
+
+**⚠️ Generator Key Collision with `yield from` and Numeric Keys**
+
+When using generators with `iterator_to_array()`, be aware that numeric keys can collide:
+
+```php
+// ❌ BAD: Header at index 0 gets overwritten by first data row at index 0
+function processWithGenerator($data): Generator
+{
+    $header = ['id', 'name'];
+    yield $header; // Yields at index 0
+
+    foreach ($data as $row) {
+        yield $row; // Also starts at index 0, overwrites header!
+    }
+}
+
+$result = iterator_to_array(processWithGenerator($data));
+// Result: Missing header row! Only has data rows.
+
+// ✅ GOOD: Return arrays for operations that need to materialize data
+function processWithArray($data): array
+{
+    $result = [];
+    $result[] = ['id', 'name']; // Header safely stored
+
+    foreach ($data as $row) {
+        $result[] = $row; // Data appended sequentially
+    }
+
+    return $result;
+}
+
+// ✅ ALSO GOOD: Use explicit keys with generators
+function processWithExplicitKeys($data): Generator
+{
+    yield 'header' => ['id', 'name']; // Named key
+
+    foreach ($data as $row) {
+        yield $row; // Numeric keys for data
+    }
+}
+```
+
+**When to use Generators vs Arrays:**
+- **Use Generators**: Streaming operations, large datasets, memory efficiency is critical
+- **Use Arrays**: Operations requiring sorting, grouping, or random access
+- **Discovered during**: Window functions implementation (percentRank, denseRank helper functions)
+
 ## SOLID Principles Examples
 
 ### Single Responsibility Principle

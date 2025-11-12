@@ -9,7 +9,7 @@ use InvalidArgumentException;
 
 /**
  * Window functions for analytical operations over row windows.
- * 
+ *
  * Window functions operate on a set of rows related to the current row,
  * similar to aggregate functions but without grouping rows into a single output row.
  */
