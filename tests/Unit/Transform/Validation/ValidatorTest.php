@@ -16,7 +16,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::required($data, ['name', 'email']);
-            
+
             expect($result['valid'])->toBeTrue();
             expect($result['errors'])->toBeEmpty();
         });
@@ -30,7 +30,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::required($data, ['name', 'email']);
-            
+
             expect($result['valid'])->toBeFalse();
             expect($result['errors'])->toHaveCount(1);
             expect($result['errors'][0])->toMatchArray([
@@ -49,7 +49,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::required($data, ['email']);
-            
+
             expect($result['valid'])->toBeFalse();
             expect($result['errors'])->toHaveCount(1);
         });
@@ -74,7 +74,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::type($data, 'name', 'string');
-            
+
             expect($result['valid'])->toBeTrue();
             expect($result['errors'])->toBeEmpty();
         });
@@ -87,7 +87,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::type($data, 'age', 'int');
-            
+
             expect($result['valid'])->toBeTrue();
         });
 
@@ -99,7 +99,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::type($data, 'age', 'int');
-            
+
             expect($result['valid'])->toBeFalse();
             expect($result['errors'])->toHaveCount(1);
             expect($result['errors'][0]['row'])->toBe(2);
@@ -129,7 +129,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::range($data, 'age', 18, 65);
-            
+
             expect($result['valid'])->toBeTrue();
         });
 
@@ -142,7 +142,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::range($data, 'age', 18, 65);
-            
+
             expect($result['valid'])->toBeFalse();
             expect($result['errors'])->toHaveCount(1);
             expect($result['errors'][0]['row'])->toBe(2);
@@ -157,7 +157,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::range($data, 'age', 18, 65);
-            
+
             expect($result['valid'])->toBeFalse();
             expect($result['errors'])->toHaveCount(1);
             expect($result['errors'][0]['row'])->toBe(3);
@@ -172,7 +172,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::range($data, 'score', null, 100);
-            
+
             expect($result['valid'])->toBeFalse();
             expect($result['errors'])->toHaveCount(1);
         });
@@ -186,7 +186,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::range($data, 'score', 10, null);
-            
+
             expect($result['valid'])->toBeFalse();
             expect($result['errors'])->toHaveCount(1);
         });
@@ -202,7 +202,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::pattern($data, 'email', '/^[a-z]+@[a-z]+\.[a-z]+$/');
-            
+
             expect($result['valid'])->toBeTrue();
         });
 
@@ -215,7 +215,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::pattern($data, 'email', '/^[a-z]+@[a-z]+\.[a-z]+$/');
-            
+
             expect($result['valid'])->toBeFalse();
             expect($result['errors'])->toHaveCount(1);
             expect($result['errors'][0]['row'])->toBe(2);
@@ -230,7 +230,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::pattern($data, 'phone', '/^\d{3}-\d{4}$/');
-            
+
             expect($result['valid'])->toBeFalse();
         });
     });
@@ -245,7 +245,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::in($data, 'status', ['active', 'pending', 'inactive']);
-            
+
             expect($result['valid'])->toBeTrue();
         });
 
@@ -258,7 +258,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::in($data, 'status', ['active', 'pending', 'inactive']);
-            
+
             expect($result['valid'])->toBeFalse();
             expect($result['errors'])->toHaveCount(1);
         });
@@ -275,7 +275,7 @@ describe('Validator', function () {
 
             $isAdult = fn($value) => $value >= 18;
             $result = Validator::custom($data, 'age', $isAdult, 'Must be adult');
-            
+
             expect($result['valid'])->toBeTrue();
         });
 
@@ -289,7 +289,7 @@ describe('Validator', function () {
 
             $isAdult = fn($value) => $value >= 18;
             $result = Validator::custom($data, 'age', $isAdult, 'Must be adult');
-            
+
             expect($result['valid'])->toBeFalse();
             expect($result['errors'])->toHaveCount(1);
             expect($result['errors'][0]['message'])->toBe('Must be adult');
@@ -311,7 +311,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::validate($data, $rules);
-            
+
             expect($result['valid'])->toBeTrue();
             expect($result['errors'])->toBeEmpty();
         });
@@ -331,7 +331,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::validate($data, $rules);
-            
+
             expect($result['valid'])->toBeFalse();
             expect($result['errors'])->toHaveCount(4); // name required, email pattern, age range * 2
         });
@@ -347,7 +347,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::unique($data, 'email');
-            
+
             expect($result['valid'])->toBeTrue();
         });
 
@@ -360,7 +360,7 @@ describe('Validator', function () {
             ];
 
             $result = Validator::unique($data, 'email');
-            
+
             expect($result['valid'])->toBeFalse();
             expect($result['errors'])->toHaveCount(1);
         });
@@ -376,7 +376,7 @@ describe('Table validation methods', function () {
         ]);
 
         $result = $table->validateRequired(['name', 'email']);
-        
+
         expect($result['valid'])->toBeFalse();
         expect($result['errors'])->toHaveCount(1);
     });
@@ -394,7 +394,7 @@ describe('Table validation methods', function () {
         ];
 
         $result = $table->validate($rules);
-        
+
         expect($result['valid'])->toBeTrue();
     });
 

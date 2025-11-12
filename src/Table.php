@@ -26,6 +26,7 @@ use Phetl\Transform\Rows\RowSelector;
 use Phetl\Transform\Rows\RowSorter;
 use Phetl\Transform\Set\SetOperation;
 use Phetl\Transform\Validation\Validator;
+use Phetl\Transform\Values\StringTransformer;
 use Phetl\Transform\Values\ValueConverter;
 use Phetl\Transform\Values\ValueReplacer;
 use PDO;
@@ -835,7 +836,7 @@ class Table implements IteratorAggregate
     public function validateOrFail(array $rules): self
     {
         $result = Validator::validate($this->materializedData, $rules);
-        
+
         if (!$result['valid']) {
             $errorCount = count($result['errors']);
             throw new RuntimeException("Validation failed with $errorCount error(s)");
@@ -854,7 +855,7 @@ class Table implements IteratorAggregate
     {
         $validationResult = Validator::validate($this->materializedData, $rules);
         $invalidRows = [];
-        
+
         foreach ($validationResult['errors'] as $error) {
             $invalidRows[$error['row']] = true;
         }
@@ -866,7 +867,7 @@ class Table implements IteratorAggregate
             if ($index === 0) {
                 continue; // Skip header
             }
-            
+
             if (!isset($invalidRows[$index])) {
                 $filtered[] = $row;
             }
@@ -885,7 +886,7 @@ class Table implements IteratorAggregate
     {
         $validationResult = Validator::validate($this->materializedData, $rules);
         $invalidRows = [];
-        
+
         foreach ($validationResult['errors'] as $error) {
             $invalidRows[$error['row']] = true;
         }
@@ -897,12 +898,76 @@ class Table implements IteratorAggregate
             if ($index === 0) {
                 continue; // Skip header
             }
-            
+
             if (isset($invalidRows[$index])) {
                 $filtered[] = $row;
             }
         }
 
         return new self($filtered);
+    }
+
+    // =================================================================
+    // String Operations
+    // =================================================================
+
+    /**
+     * Convert field values to uppercase.
+     *
+     * @param string $field
+     * @return self
+     */
+    public function upper(string $field): self
+    {
+        return new self(StringTransformer::upper($this->materializedData, $field));
+    }
+
+    /**
+     * Convert field values to lowercase.
+     *
+     * @param string $field
+     * @return self
+     */
+    public function lower(string $field): self
+    {
+        return new self(StringTransformer::lower($this->materializedData, $field));
+    }
+
+    /**
+     * Trim whitespace (or other characters) from field values.
+     *
+     * @param string $field
+     * @param string $characters Characters to trim (default: whitespace)
+     * @return self
+     */
+    public function trim(string $field, string $characters = " \t\n\r\0\x0B"): self
+    {
+        return new self(StringTransformer::trim($this->materializedData, $field, $characters));
+    }
+
+    /**
+     * Concatenate multiple fields into target field.
+     *
+     * @param string $targetField
+     * @param array<string> $sourceFields
+     * @param string $separator
+     * @return self
+     */
+    public function concatFields(string $targetField, array $sourceFields, string $separator = ''): self
+    {
+        return new self(StringTransformer::concat($this->materializedData, $targetField, $sourceFields, $separator));
+    }
+
+    /**
+     * Extract pattern from field into new field.
+     *
+     * @param string $sourceField
+     * @param string $targetField
+     * @param string $pattern Regex pattern with capture group
+     * @return self
+     */
+    public function extractPattern(string $sourceField, string $targetField, string $pattern): self
+    {
+        return new self(StringTransformer::extract($this->materializedData, $sourceField, $targetField, $pattern));
     }
 }

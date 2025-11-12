@@ -14,7 +14,7 @@ describe('Validation Pipeline Integration', function () {
         ];
 
         $table = Table::fromArray($data);
-        
+
         $result = $table->validate([
             'username' => ['required'],
             'email' => ['required', ['pattern', '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/']],
@@ -59,7 +59,7 @@ describe('Validation Pipeline Integration', function () {
         ];
 
         $table = Table::fromArray($data);
-        
+
         $result = $table->validate([
             'email' => [['pattern', '/^[a-z]+@[a-z]+\.[a-z]+$/'], ['unique']],
             'phone' => [['pattern', '/^\d{3}-\d{4}$/']],
@@ -284,7 +284,7 @@ describe('Validation Pipeline Integration', function () {
 
         expect($result['valid'])->toBeFalse();
         expect($result['errors'])->toHaveCount(5); // username, email, age, role errors
-        
+
         // Check specific errors
         $errorFields = array_column($result['errors'], 'field');
         expect($errorFields)->toContain('username');
