@@ -40,7 +40,7 @@ class AggregationBenchmark extends Benchmark
     private function generateData(): array
     {
         $categories = array_map(fn($i) => "Category $i", range(1, $this->groupCount));
-        
+
         $data = [['id', 'category', 'sales', 'quantity']];
 
         for ($i = 1; $i <= $this->rowCount; $i++) {

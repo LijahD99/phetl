@@ -44,7 +44,7 @@ class SortBenchmark extends Benchmark
     private function generateData(): array
     {
         $departments = ['Engineering', 'Sales', 'Marketing', 'HR', 'Finance'];
-        
+
         $data = [['id', 'name', 'age', 'salary', 'department']];
 
         for ($i = 1; $i <= $this->rowCount; $i++) {

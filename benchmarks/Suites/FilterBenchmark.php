@@ -40,8 +40,8 @@ class FilterBenchmark extends Benchmark
                     ->toArray();
                 break;
             case 'closure':
-                $table->filter(fn($row) => 
-                    $row['age'] > 25 && 
+                $table->filter(fn($row) =>
+                    $row['age'] > 25 &&
                     in_array($row['department'], ['Engineering', 'Sales'])
                 )->toArray();
                 break;
@@ -52,7 +52,7 @@ class FilterBenchmark extends Benchmark
     {
         $statuses = ['active', 'inactive', 'pending'];
         $departments = ['Engineering', 'Sales', 'Marketing', 'HR'];
-        
+
         $data = [['id', 'name', 'age', 'status', 'department']];
 
         for ($i = 1; $i <= $this->rowCount; $i++) {

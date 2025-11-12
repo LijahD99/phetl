@@ -116,7 +116,7 @@ class MyCustomBenchmark extends Benchmark
         // Your benchmark code here
         $data = $this->generateData();
         $table = Table::fromArray($data);
-        
+
         // Perform operations...
         $result = $table
             ->whereEquals('status', 'active')
@@ -128,11 +128,11 @@ class MyCustomBenchmark extends Benchmark
     {
         // Generate test data
         $data = [['id', 'name', 'age', 'status']];
-        
+
         for ($i = 1; $i <= $this->rowCount; $i++) {
             $data[] = [$i, "User $i", rand(20, 70), 'active'];
         }
-        
+
         return $data;
     }
 }

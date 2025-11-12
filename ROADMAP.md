@@ -45,7 +45,7 @@ Build comprehensive benchmarking infrastructure to establish performance baselin
 
 Add support for Apache Parquet columnar storage format for big data workflows.
 
-**Why**: 
+**Why**:
 - Modern columnar format essential for analytics
 - Efficient compression and encoding
 - Popular in Spark, pandas, dask ecosystems
