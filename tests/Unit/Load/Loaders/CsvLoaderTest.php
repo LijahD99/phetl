@@ -43,7 +43,7 @@ final class CsvLoaderTest extends TestCase
         ];
 
         $loader = new CsvLoader($this->testFile);
-        $rowCount = $loader->load($data);
+        $rowCount = $loader->load($data)->rowCount();
 
         $this->assertEquals(2, $rowCount);
         $this->assertFileExists($this->testFile);
@@ -120,7 +120,7 @@ final class CsvLoaderTest extends TestCase
     public function test_it_handles_empty_data(): void
     {
         $loader = new CsvLoader($this->testFile);
-        $rowCount = $loader->load([]);
+        $rowCount = $loader->load([])->rowCount();
 
         $this->assertEquals(0, $rowCount);
         $this->assertFileExists($this->testFile);
@@ -134,7 +134,7 @@ final class CsvLoaderTest extends TestCase
         ];
 
         $loader = new CsvLoader($this->testFile);
-        $rowCount = $loader->load($data);
+        $rowCount = $loader->load($data)->rowCount();
 
         $this->assertEquals(0, $rowCount);
         $content = file_get_contents($this->testFile);

@@ -7,6 +7,7 @@ namespace Phetl\Load\Loaders;
 use InvalidArgumentException;
 use PDO;
 use Phetl\Contracts\LoaderInterface;
+use Phetl\Support\LoadResult;
 
 /**
  * Loads data into database tables using PDO.
@@ -32,9 +33,9 @@ final class DatabaseLoader implements LoaderInterface
 
     /**
      * @param iterable<int, array<int|string, mixed>> $data
-     * @return int Number of rows loaded (excluding header)
+     * @return LoadResult Result containing row count and operation details
      */
-    public function load(iterable $data): int
+    public function load(iterable $data): LoadResult
     {
         $headers = null;
         $rowCount = 0;
@@ -62,7 +63,7 @@ final class DatabaseLoader implements LoaderInterface
             throw $e;
         }
 
-        return $rowCount;
+        return new LoadResult($rowCount);
     }
 
     /**

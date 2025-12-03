@@ -4,6 +4,7 @@ namespace Phetl\Load\Loaders;
 
 use InvalidArgumentException;
 use Phetl\Contracts\LoaderInterface;
+use Phetl\Support\LoadResult;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -40,9 +41,9 @@ class ExcelLoader implements LoaderInterface
      * Load data to the Excel file
      *
      * @param iterable<int, array<int|string, mixed>> $data
-     * @return int Number of rows loaded (excluding header)
+     * @return LoadResult Result containing row count and operation details
      */
-    public function load(iterable $data): int
+    public function load(iterable $data): LoadResult
     {
         $rowCount = 0;
         $isFirstRow = true;
@@ -70,7 +71,7 @@ class ExcelLoader implements LoaderInterface
 
         $this->save();
 
-        return $rowCount;
+        return new LoadResult($rowCount);
     }
 
     /**
@@ -91,7 +92,7 @@ class ExcelLoader implements LoaderInterface
     private function initialize(): void
     {
         $this->spreadsheet = new Spreadsheet();
-        
+
         if ($this->sheet === null) {
             $this->worksheet = $this->spreadsheet->getActiveSheet();
         } elseif (is_string($this->sheet)) {

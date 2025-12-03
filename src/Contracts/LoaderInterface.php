@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Phetl\Contracts;
 
+use Phetl\Support\LoadResult;
+
 /**
  * Interface for data loaders that write tabular data to destinations.
  *
@@ -20,7 +22,7 @@ interface LoaderInterface
      * - Subsequent elements are data rows (arrays of values)
      *
      * @param iterable<int, array<int|string, mixed>> $data
-     * @return int Number of rows loaded (excluding header)
+     * @return LoadResult Result containing row count, errors, warnings, etc.
      */
-    public function load(iterable $data): int;
+    public function load(iterable $data): LoadResult;
 }

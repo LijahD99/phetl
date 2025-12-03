@@ -195,7 +195,7 @@ class TableTest extends TestCase
         $table = Table::fromArray($data);
         $csvFile = $this->testDir . '/output.csv';
 
-        $rowCount = $table->toCsv($csvFile);
+        $rowCount = $table->toCsv($csvFile)->rowCount();
 
         $this->assertEquals(2, $rowCount);
         $this->assertFileExists($csvFile);
@@ -216,7 +216,7 @@ class TableTest extends TestCase
         $table = Table::fromArray($data);
         $jsonFile = $this->testDir . '/output.json';
 
-        $rowCount = $table->toJson($jsonFile);
+        $rowCount = $table->toJson($jsonFile)->rowCount();
 
         $this->assertEquals(2, $rowCount);
         $this->assertFileExists($jsonFile);
@@ -234,7 +234,7 @@ class TableTest extends TestCase
 
         $table = Table::fromArray($data);
 
-        $rowCount = $table->toDatabase($this->pdo, 'users');
+        $rowCount = $table->toDatabase($this->pdo, 'users')->rowCount();
 
         $this->assertEquals(2, $rowCount);
 

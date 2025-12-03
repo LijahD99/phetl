@@ -43,7 +43,7 @@ final class DatabaseLoaderTest extends TestCase
         ];
 
         $loader = new DatabaseLoader($this->pdo, 'users');
-        $rowCount = $loader->load($data);
+        $rowCount = $loader->load($data)->rowCount();
 
         $this->assertEquals(2, $rowCount);
 
@@ -69,7 +69,7 @@ final class DatabaseLoaderTest extends TestCase
         $this->pdo->exec('CREATE TABLE users (name TEXT)');
 
         $loader = new DatabaseLoader($this->pdo, 'users');
-        $rowCount = $loader->load([]);
+        $rowCount = $loader->load([])->rowCount();
 
         $this->assertEquals(0, $rowCount);
     }
@@ -83,7 +83,7 @@ final class DatabaseLoaderTest extends TestCase
         ];
 
         $loader = new DatabaseLoader($this->pdo, 'users');
-        $rowCount = $loader->load($data);
+        $rowCount = $loader->load($data)->rowCount();
 
         $this->assertEquals(0, $rowCount);
 
@@ -126,7 +126,7 @@ final class DatabaseLoaderTest extends TestCase
         ];
 
         $loader = new DatabaseLoader($this->pdo, 'users');
-        $rowCount = $loader->load($data);
+        $rowCount = $loader->load($data)->rowCount();
 
         $this->assertEquals(3, $rowCount);
 
@@ -167,7 +167,7 @@ final class DatabaseLoaderTest extends TestCase
 
         // SQLite PRAGMA doesn't throw for nonexistent tables, returns empty result
         // So no rows will match and insert won't happen
-        $rowCount = $loader->load($data);
+        $rowCount = $loader->load($data)->rowCount();
 
         // Since table doesn't exist, getTableColumns returns empty, no inserts happen
         $this->assertEquals(1, $rowCount); // Row is processed but not inserted
@@ -184,7 +184,7 @@ final class DatabaseLoaderTest extends TestCase
         ];
 
         $loader = new DatabaseLoader($this->pdo, 'users');
-        $rowCount = $loader->load($data);
+        $rowCount = $loader->load($data)->rowCount();
 
         $this->assertEquals(1, $rowCount);
 

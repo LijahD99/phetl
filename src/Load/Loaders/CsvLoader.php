@@ -6,6 +6,7 @@ namespace Phetl\Load\Loaders;
 
 use InvalidArgumentException;
 use Phetl\Contracts\LoaderInterface;
+use Phetl\Support\LoadResult;
 
 /**
  * Loads data to CSV files.
@@ -32,9 +33,9 @@ final class CsvLoader implements LoaderInterface
 
     /**
      * @param iterable<int, array<int|string, mixed>> $data
-     * @return int Number of rows loaded (excluding header)
+     * @return LoadResult Result containing row count and operation details
      */
-    public function load(iterable $data): int
+    public function load(iterable $data): LoadResult
     {
         $handle = fopen($this->filePath, 'w');
 
@@ -59,7 +60,7 @@ final class CsvLoader implements LoaderInterface
             fclose($handle);
         }
 
-        return $rowCount;
+        return new LoadResult($rowCount);
     }
 
     /**

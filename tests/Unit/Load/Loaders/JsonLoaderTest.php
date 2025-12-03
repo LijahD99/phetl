@@ -43,7 +43,7 @@ final class JsonLoaderTest extends TestCase
         ];
 
         $loader = new JsonLoader($this->testFile);
-        $rowCount = $loader->load($data);
+        $rowCount = $loader->load($data)->rowCount();
 
         $this->assertEquals(2, $rowCount);
         $this->assertFileExists($this->testFile);
@@ -78,7 +78,7 @@ final class JsonLoaderTest extends TestCase
     public function test_it_handles_empty_data(): void
     {
         $loader = new JsonLoader($this->testFile);
-        $rowCount = $loader->load([]);
+        $rowCount = $loader->load([])->rowCount();
 
         $this->assertEquals(0, $rowCount);
         $this->assertFileExists($this->testFile);
@@ -92,7 +92,7 @@ final class JsonLoaderTest extends TestCase
         ];
 
         $loader = new JsonLoader($this->testFile);
-        $rowCount = $loader->load($data);
+        $rowCount = $loader->load($data)->rowCount();
 
         $this->assertEquals(0, $rowCount);
         $content = file_get_contents($this->testFile);

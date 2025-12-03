@@ -17,6 +17,7 @@ use Phetl\Load\Loaders\CsvLoader;
 use Phetl\Load\Loaders\DatabaseLoader;
 use Phetl\Load\Loaders\ExcelLoader;
 use Phetl\Load\Loaders\JsonLoader;
+use Phetl\Support\LoadResult;
 use Phetl\Transform\Aggregation\Aggregator;
 use Phetl\Transform\Columns\ColumnAdder;
 use Phetl\Transform\Columns\ColumnRenamer;
@@ -144,7 +145,7 @@ class Table implements IteratorAggregate
         string $delimiter = ',',
         string $enclosure = '"',
         string $escape = '\\'
-    ): int {
+    ): LoadResult {
         $loader = new CsvLoader($filePath, $delimiter, $enclosure, $escape);
         return $loader->load($this->materializedData);
     }
@@ -152,7 +153,7 @@ class Table implements IteratorAggregate
     /**
      * Load data to a JSON file.
      */
-    public function toJson(string $filePath, bool $prettyPrint = false): int
+    public function toJson(string $filePath, bool $prettyPrint = false): LoadResult
     {
         $loader = new JsonLoader($filePath, $prettyPrint);
         return $loader->load($this->materializedData);
@@ -161,7 +162,7 @@ class Table implements IteratorAggregate
     /**
      * Load data to a database table.
      */
-    public function toDatabase(PDO $pdo, string $tableName): int
+    public function toDatabase(PDO $pdo, string $tableName): LoadResult
     {
         $loader = new DatabaseLoader($pdo, $tableName);
         return $loader->load($this->materializedData);
@@ -172,7 +173,7 @@ class Table implements IteratorAggregate
      *
      * @param string|int|null $sheet Sheet name (string), index (int), or null for active sheet
      */
-    public function toExcel(string $filePath, string|int|null $sheet = null): int
+    public function toExcel(string $filePath, string|int|null $sheet = null): LoadResult
     {
         $loader = new ExcelLoader($filePath, $sheet);
         return $loader->load($this->materializedData);
@@ -181,7 +182,7 @@ class Table implements IteratorAggregate
     /**
      * Load data using any loader.
      */
-    public function toLoader(LoaderInterface $loader): int
+    public function toLoader(LoaderInterface $loader): LoadResult
     {
         return $loader->load($this->materializedData);
     }

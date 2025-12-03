@@ -6,6 +6,7 @@ namespace Phetl\Load\Loaders;
 
 use InvalidArgumentException;
 use Phetl\Contracts\LoaderInterface;
+use Phetl\Support\LoadResult;
 
 /**
  * Loads data to JSON files as an array of objects.
@@ -28,9 +29,9 @@ final class JsonLoader implements LoaderInterface
 
     /**
      * @param iterable<int, array<int|string, mixed>> $data
-     * @return int Number of rows loaded (excluding header)
+     * @return LoadResult Result containing row count and operation details
      */
-    public function load(iterable $data): int
+    public function load(iterable $data): LoadResult
     {
         $headers = null;
         $objects = [];
@@ -61,7 +62,7 @@ final class JsonLoader implements LoaderInterface
             throw new InvalidArgumentException('Cannot write to file: ' . $this->filePath);
         }
 
-        return count($objects);
+        return new LoadResult(count($objects));
     }
 
     /**

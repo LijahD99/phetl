@@ -231,6 +231,10 @@ examples/                        ✓ Created
 ### ✅ Documentation
 - **README.md** - Complete overview with improved structure
 - **CONTRIBUTING.md** - Development standards and workflow
+- **DIFFERENCES_FROM_PETL.md** - ⚠️ Important: Documents intentional differences from Python petl
+  - LoadResult return values vs None (breaking change)
+  - Enhanced observability for production ETL
+  - Migration guide for petl users
 - **CHANGELOG.md** - Version history tracking
 - **ROADMAP.md** - Future enhancements including RESTful API extractor
 - **GETTING_STARTED_DEV.md** - TDD development guide

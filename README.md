@@ -610,6 +610,22 @@ This structure better reflects ETL workflows and makes the codebase more maintai
 - **PHP-CS-Fixer** - code style
 - **PHPStan** - static analysis
 
+## Differences from Python PETL
+
+While Phetl maintains functional compatibility with Python's petl library, there are some intentional differences that enhance observability and embrace PHP idioms. Most notably:
+
+⚠️ **Load operations return `LoadResult` objects instead of `None`**
+
+```php
+// Instead of: etl.tocsv(table, 'output.csv')  # Returns None
+$result = $table->toCsv('output.csv');  // Returns LoadResult
+$rowCount = $result->rowCount();        // Get rows loaded
+```
+
+This provides critical observability for production ETL pipelines including row counts, errors, warnings, and performance metrics.
+
+📖 **See [DIFFERENCES_FROM_PETL.md](DIFFERENCES_FROM_PETL.md) for complete documentation of differences**
+
 ## Contributing
 
 This is a PHP port of the Python petl library. We aim to maintain API compatibility where possible while embracing PHP idioms and best practices.
@@ -622,3 +638,4 @@ TBD (should align with petl's MIT license)
 
 - [petl documentation](https://petl.readthedocs.io/stable/)
 - [petl GitHub](https://github.com/petl-developers/petl)
+- [Differences from PETL](DIFFERENCES_FROM_PETL.md) - Important for petl users migrating to Phetl
