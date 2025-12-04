@@ -106,7 +106,8 @@ class TableTest extends TestCase
             $rows[] = $row;
         }
 
-        $this->assertEquals($data, $rows);
+        // Iteration now yields only data rows (without header)
+        $this->assertEquals([['Alice', 30], ['Bob', 25]], $rows);
     }
 
     public function test_it_can_be_iterated_multiple_times(): void
@@ -182,7 +183,7 @@ class TableTest extends TestCase
         $table = Table::fromArray([['id', 'name']]);
 
         $this->assertEquals(['id', 'name'], $table->header());
-        $this->assertEquals(1, $table->count()); // Count includes header
+        $this->assertEquals(0, $table->count()); // Count excludes header, so 0 data rows
     }
 
     public function test_it_writes_to_csv(): void
