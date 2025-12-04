@@ -78,7 +78,7 @@ describe('Validation Pipeline Integration', function () {
 
         $table = Table::fromArray($data);
 
-        expect(fn() => $table->validateOrFail([
+        expect(fn () => $table->validateOrFail([
             'age' => [['range', 18, 65]],
         ]))->toThrow(RuntimeException::class, 'Validation failed');
     });
@@ -155,7 +155,7 @@ describe('Validation Pipeline Integration', function () {
 
         // Custom validation: discount must be less than price
         $result = $table->validate([
-            'discount' => [['custom', fn($v) => $v < 100, 'Discount too high']],
+            'discount' => [['custom', fn ($v) => $v < 100, 'Discount too high']],
         ]);
 
         expect($result['valid'])->toBeFalse();
@@ -176,7 +176,7 @@ describe('Validation Pipeline Integration', function () {
             ->filterValid([
                 'age' => [['range', 18, 65]],
             ])
-            ->filter(fn($row) => $row['score'] >= 75)
+            ->filter(fn ($row) => $row['score'] >= 75)
             ->selectColumns('name', 'score')
             ->toArray();
 
@@ -260,7 +260,7 @@ describe('Validation Pipeline Integration', function () {
         ];
 
         $result = Table::fromArray($data)
-            ->filter(fn($row) => $row['category'] === 'adult')
+            ->filter(fn ($row) => $row['category'] === 'adult')
             ->validateRequired(['name', 'age']);
 
         expect($result['valid'])->toBeTrue();

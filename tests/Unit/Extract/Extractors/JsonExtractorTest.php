@@ -75,7 +75,8 @@ final class JsonExtractorTest extends TestCase
 
         try {
             new JsonExtractor($this->testFile);
-        } finally {
+        }
+        finally {
             chmod($this->testFile, 0o644);
         }
     }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Phetl\Transform\Rows;
 
 use Closure;
-use Generator;
 
 /**
  * Row filtering transformations.
@@ -50,7 +49,7 @@ class RowFilter
      */
     public static function whereEquals(array $headers, array $data, string $field, mixed $value): array
     {
-        return self::filter($headers, $data, fn(array $row) => ($row[$field] ?? null) === $value);
+        return self::filter($headers, $data, fn (array $row) => ($row[$field] ?? null) === $value);
     }
 
     /**
@@ -64,7 +63,7 @@ class RowFilter
      */
     public static function whereNotEquals(array $headers, array $data, string $field, mixed $value): array
     {
-        return self::filter($headers, $data, fn(array $row) => ($row[$field] ?? null) !== $value);
+        return self::filter($headers, $data, fn (array $row) => ($row[$field] ?? null) !== $value);
     }
 
     /**
@@ -78,7 +77,7 @@ class RowFilter
      */
     public static function whereGreaterThan(array $headers, array $data, string $field, int|float $value): array
     {
-        return self::filter($headers, $data, fn(array $row) => ($row[$field] ?? null) > $value);
+        return self::filter($headers, $data, fn (array $row) => ($row[$field] ?? null) > $value);
     }
 
     /**
@@ -92,7 +91,7 @@ class RowFilter
      */
     public static function whereLessThan(array $headers, array $data, string $field, int|float $value): array
     {
-        return self::filter($headers, $data, fn(array $row) => ($row[$field] ?? null) < $value);
+        return self::filter($headers, $data, fn (array $row) => ($row[$field] ?? null) < $value);
     }
 
     /**
@@ -106,7 +105,7 @@ class RowFilter
      */
     public static function whereGreaterThanOrEqual(array $headers, array $data, string $field, int|float $value): array
     {
-        return self::filter($headers, $data, fn(array $row) => ($row[$field] ?? null) >= $value);
+        return self::filter($headers, $data, fn (array $row) => ($row[$field] ?? null) >= $value);
     }
 
     /**
@@ -120,7 +119,7 @@ class RowFilter
      */
     public static function whereLessThanOrEqual(array $headers, array $data, string $field, int|float $value): array
     {
-        return self::filter($headers, $data, fn(array $row) => ($row[$field] ?? null) <= $value);
+        return self::filter($headers, $data, fn (array $row) => ($row[$field] ?? null) <= $value);
     }
 
     /**
@@ -134,7 +133,7 @@ class RowFilter
      */
     public static function whereIn(array $headers, array $data, string $field, array $values): array
     {
-        return self::filter($headers, $data, fn(array $row) => in_array($row[$field] ?? null, $values, true));
+        return self::filter($headers, $data, fn (array $row) => in_array($row[$field] ?? null, $values, true));
     }
 
     /**
@@ -148,7 +147,7 @@ class RowFilter
      */
     public static function whereNotIn(array $headers, array $data, string $field, array $values): array
     {
-        return self::filter($headers, $data, fn(array $row) => !in_array($row[$field] ?? null, $values, true));
+        return self::filter($headers, $data, fn (array $row) => ! in_array($row[$field] ?? null, $values, true));
     }
 
     /**
@@ -161,7 +160,7 @@ class RowFilter
      */
     public static function whereNull(array $headers, array $data, string $field): array
     {
-        return self::filter($headers, $data, fn(array $row) => ($row[$field] ?? null) === null);
+        return self::filter($headers, $data, fn (array $row) => ($row[$field] ?? null) === null);
     }
 
     /**
@@ -174,7 +173,7 @@ class RowFilter
      */
     public static function whereNotNull(array $headers, array $data, string $field): array
     {
-        return self::filter($headers, $data, fn(array $row) => ($row[$field] ?? null) !== null);
+        return self::filter($headers, $data, fn (array $row) => ($row[$field] ?? null) !== null);
     }
 
     /**
@@ -187,7 +186,7 @@ class RowFilter
      */
     public static function whereTrue(array $headers, array $data, string $field): array
     {
-        return self::filter($headers, $data, fn(array $row) => ($row[$field] ?? null) === true);
+        return self::filter($headers, $data, fn (array $row) => ($row[$field] ?? null) === true);
     }
 
     /**
@@ -200,7 +199,7 @@ class RowFilter
      */
     public static function whereFalse(array $headers, array $data, string $field): array
     {
-        return self::filter($headers, $data, fn(array $row) => ($row[$field] ?? null) === false);
+        return self::filter($headers, $data, fn (array $row) => ($row[$field] ?? null) === false);
     }
 
     /**
@@ -217,7 +216,7 @@ class RowFilter
         return self::filter(
             $headers,
             $data,
-            fn(array $row) => is_string($row[$field] ?? null) && str_contains($row[$field], $substring)
+            fn (array $row) => is_string($row[$field] ?? null) && str_contains($row[$field], $substring)
         );
     }
 }

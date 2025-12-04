@@ -16,7 +16,7 @@ class TableTest extends TestCase
     protected function setUp(): void
     {
         $this->testDir = sys_get_temp_dir() . '/phetl_table_test_' . uniqid();
-        mkdir($this->testDir, 0777, true);
+        mkdir($this->testDir, 0o777, true);
 
         $this->pdo = new PDO('sqlite::memory:');
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

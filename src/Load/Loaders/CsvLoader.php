@@ -57,7 +57,8 @@ final class CsvLoader implements LoaderInterface
                 fputcsv($handle, $row, $this->delimiter, $this->enclosure, $this->escape);
                 $rowCount++;
             }
-        } finally {
+        }
+        finally {
             fclose($handle);
         }
 

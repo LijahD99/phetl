@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Phetl\Load\Loaders;
 
 use InvalidArgumentException;
 use Phetl\Contracts\LoaderInterface;
 use Phetl\Support\LoadResult;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 /**
  * Loads data into Excel files (.xlsx format)
@@ -49,7 +51,7 @@ class ExcelLoader implements LoaderInterface
         $rowCount = 0;
 
         // Write headers
-        if (!empty($headers)) {
+        if (! empty($headers)) {
             $col = 1;
             foreach ($headers as $value) {
                 $coordinate = Coordinate::stringFromColumnIndex($col) . $this->currentRow;
@@ -63,6 +65,7 @@ class ExcelLoader implements LoaderInterface
         foreach ($data as $row) {
             if (empty($row)) {
                 $this->currentRow++;
+
                 continue;
             }
 
@@ -103,14 +106,17 @@ class ExcelLoader implements LoaderInterface
 
         if ($this->sheet === null) {
             $this->worksheet = $this->spreadsheet->getActiveSheet();
-        } elseif (is_string($this->sheet)) {
+        }
+        elseif (is_string($this->sheet)) {
             $this->worksheet = $this->spreadsheet->getActiveSheet();
             $this->worksheet->setTitle($this->sheet);
-        } else {
+        }
+        else {
             // Sheet index
             if ($this->sheet === 0) {
                 $this->worksheet = $this->spreadsheet->getActiveSheet();
-            } else {
+            }
+            else {
                 // Create additional sheets if needed
                 while ($this->spreadsheet->getSheetCount() <= $this->sheet) {
                     $this->spreadsheet->createSheet();
@@ -127,8 +133,8 @@ class ExcelLoader implements LoaderInterface
     {
         // Create parent directory if it doesn't exist
         $dir = dirname($this->filePath);
-        if (!is_dir($dir)) {
-            mkdir($dir, 0755, true);
+        if (! is_dir($dir)) {
+            mkdir($dir, 0o755, true);
         }
 
         $writer = new Xlsx($this->spreadsheet);

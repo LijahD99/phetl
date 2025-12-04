@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phetl\Transform\Values;
 
-use Generator;
 use InvalidArgumentException;
 
 /**
@@ -58,7 +57,8 @@ final class ConditionalTransformer
 
             if ($conditionResult) {
                 $row[$targetIndex] = is_callable($thenValue) ? $thenValue($row) : $thenValue;
-            } else {
+            }
+            else {
                 $row[$targetIndex] = is_callable($elseValue) ? $elseValue($row) : $elseValue;
             }
 
@@ -110,6 +110,7 @@ final class ConditionalTransformer
             foreach ($fieldIndices as $fieldIndex) {
                 if ($row[$fieldIndex] !== null) {
                     $result = $row[$fieldIndex];
+
                     break;
                 }
             }
@@ -213,7 +214,8 @@ final class ConditionalTransformer
 
             if ($fieldValue === null) {
                 $row[$targetIndex] = is_callable($default) ? $default($row) : $default;
-            } else {
+            }
+            else {
                 $row[$targetIndex] = $fieldValue;
             }
 
@@ -264,6 +266,7 @@ final class ConditionalTransformer
             foreach ($conditions as [$condition, $value]) {
                 if ($condition($fieldValue)) {
                     $result = is_callable($value) ? $value($row) : $value;
+
                     break;
                 }
             }
@@ -294,6 +297,7 @@ final class ConditionalTransformer
         if ($index === false) {
             throw new InvalidArgumentException("Field '{$field}' does not exist");
         }
+
         return $index;
     }
 }

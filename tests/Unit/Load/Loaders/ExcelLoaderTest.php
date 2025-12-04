@@ -1,7 +1,9 @@
 <?php
 
-use Phetl\Load\Loaders\ExcelLoader;
+declare(strict_types=1);
+
 use Phetl\Contracts\LoaderInterface;
+use Phetl\Load\Loaders\ExcelLoader;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 beforeEach(function () {

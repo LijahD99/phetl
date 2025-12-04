@@ -18,11 +18,11 @@ describe('Conditional Transformation Pipeline Integration', function () {
 
         $result = $table
             ->case('amount', 'tier', [
-                [fn($val) => $val >= 1000, 'Premium'],
-                [fn($val) => $val >= 500, 'Gold'],
-                [fn($val) => $val >= 200, 'Silver'],
+                [fn ($val) => $val >= 1000, 'Premium'],
+                [fn ($val) => $val >= 500, 'Gold'],
+                [fn ($val) => $val >= 200, 'Silver'],
             ], 'Bronze')
-            ->when('amount', fn($val) => $val >= 1000, 'discount_pct', 0.15, 0.10)
+            ->when('amount', fn ($val) => $val >= 1000, 'discount_pct', 0.15, 0.10)
             ->toArray();
 
         expect($result)->toBe([
@@ -66,8 +66,8 @@ describe('Conditional Transformation Pipeline Integration', function () {
         ]);
 
         $result = $table
-            ->nullIf('price', 'clean_price', fn($val) => $val < 0)
-            ->nullIf('quantity', 'clean_qty', fn($val) => $val < 0)
+            ->nullIf('price', 'clean_price', fn ($val) => $val < 0)
+            ->nullIf('quantity', 'clean_qty', fn ($val) => $val < 0)
             ->ifNull('clean_price', 'final_price', 0.00)
             ->ifNull('clean_qty', 'final_qty', 0)
             ->toArray();
@@ -91,11 +91,11 @@ describe('Conditional Transformation Pipeline Integration', function () {
 
         $result = $table
             ->case('score', 'letter_grade', [
-                [fn($val) => $val >= 90, 'A'],
-                [fn($val) => $val >= 80, 'B'],
-                [fn($val) => $val >= 70, 'C'],
+                [fn ($val) => $val >= 90, 'A'],
+                [fn ($val) => $val >= 80, 'B'],
+                [fn ($val) => $val >= 70, 'C'],
             ], 'F')
-            ->when('attendance', fn($val) => $val >= 90, 'status', 'Excellent', 'Needs Improvement')
+            ->when('attendance', fn ($val) => $val >= 90, 'status', 'Excellent', 'Needs Improvement')
             ->whereIn('letter_grade', ['A', 'B'])
             ->toArray();
 
@@ -117,14 +117,14 @@ describe('Conditional Transformation Pipeline Integration', function () {
 
         $result = $table
             ->ifNull('region', 'region_clean', 'Unknown')
-            ->nullIf('revenue', 'revenue_clean', fn($val) => $val === null)
-            ->nullIf('cost', 'cost_clean', fn($val) => $val === null)
+            ->nullIf('revenue', 'revenue_clean', fn ($val) => $val === null)
+            ->nullIf('cost', 'cost_clean', fn ($val) => $val === null)
             ->ifNull('revenue_clean', 'revenue_final', 0)
             ->ifNull('cost_clean', 'cost_final', 0)
             ->case('revenue_final', 'size', [
-                [fn($val) => $val >= 100000, 'Enterprise'],
-                [fn($val) => $val >= 50000, 'Mid-Market'],
-                [fn($val) => $val > 0, 'SMB'],
+                [fn ($val) => $val >= 100000, 'Enterprise'],
+                [fn ($val) => $val >= 50000, 'Mid-Market'],
+                [fn ($val) => $val > 0, 'SMB'],
             ], 'No Revenue')
             ->toArray();
 
@@ -146,14 +146,14 @@ describe('Conditional Transformation Pipeline Integration', function () {
         $result = $table
             ->when(
                 'sales',
-                fn($val) => $val >= 100000,
+                fn ($val) => $val >= 100000,
                 'bonus',
-                fn($row) => $row[1] * 0.10, // sales * 10%
-                fn($row) => $row[1] * 0.05  // sales * 5%
+                fn ($row) => $row[1] * 0.10, // sales * 10%
+                fn ($row) => $row[1] * 0.05  // sales * 5%
             )
             ->when(
                 'years',
-                fn($val) => $val >= 5,
+                fn ($val) => $val >= 5,
                 'seniority_bonus',
                 5000,
                 0

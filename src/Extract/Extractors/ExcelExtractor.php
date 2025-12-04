@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Phetl\Extract\Extractors;
 
 use InvalidArgumentException;
-use Generator;
 use Phetl\Contracts\ExtractorInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -61,10 +60,11 @@ final class ExcelExtractor implements ExtractorInterface
                 $cell = $worksheet->getCell($coordinate);
                 $value = $cell->getCalculatedValue(); // Evaluates formulas
 
-                $headers[] = (string)($value ?? "col_" . ($col - 1));
+                $headers[] = (string) ($value ?? "col_" . ($col - 1));
             }
             $startRow = 2;
-        } else {
+        }
+        else {
             // Auto-generate headers
             for ($col = 1; $col <= $highestColumnIndex; $col++) {
                 $headers[] = "col_" . ($col - 1);
@@ -108,13 +108,15 @@ final class ExcelExtractor implements ExtractorInterface
                     sprintf('Sheet "%s" not found in Excel file', $this->sheet)
                 );
             }
+
             return $sheet;
         }
 
         // Sheet specified by index
         try {
             return $spreadsheet->getSheet($this->sheet);
-        } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
+        }
+        catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
             throw new InvalidArgumentException(
                 sprintf('Sheet index %d not found in Excel file', $this->sheet)
             );
@@ -126,7 +128,7 @@ final class ExcelExtractor implements ExtractorInterface
      */
     private function validate(): void
     {
-        if (!file_exists($this->filePath)) {
+        if (! file_exists($this->filePath)) {
             throw new InvalidArgumentException('Excel file does not exist: ' . $this->filePath);
         }
 
@@ -141,10 +143,12 @@ final class ExcelExtractor implements ExtractorInterface
                         sprintf('Sheet "%s" not found in Excel file', $this->sheet)
                     );
                 }
-            } else {
+            }
+            else {
                 try {
                     $spreadsheet->getSheet($this->sheet);
-                } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
+                }
+                catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
                     throw new InvalidArgumentException(
                         sprintf('Sheet index %d not found in Excel file', $this->sheet)
                     );

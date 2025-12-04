@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phetl\Transform\Values;
 
-use Generator;
 use InvalidArgumentException;
 
 /**
@@ -27,7 +26,7 @@ class StringTransformer
 
         foreach ($data as $row) {
             if ($row[$fieldIndex] !== null) {
-                $row[$fieldIndex] = strtoupper((string)$row[$fieldIndex]);
+                $row[$fieldIndex] = strtoupper((string) $row[$fieldIndex]);
             }
             $newData[] = $row;
         }
@@ -50,7 +49,7 @@ class StringTransformer
 
         foreach ($data as $row) {
             if ($row[$fieldIndex] !== null) {
-                $row[$fieldIndex] = strtolower((string)$row[$fieldIndex]);
+                $row[$fieldIndex] = strtolower((string) $row[$fieldIndex]);
             }
             $newData[] = $row;
         }
@@ -74,7 +73,7 @@ class StringTransformer
 
         foreach ($data as $row) {
             if ($row[$fieldIndex] !== null) {
-                $row[$fieldIndex] = trim((string)$row[$fieldIndex], $characters);
+                $row[$fieldIndex] = trim((string) $row[$fieldIndex], $characters);
             }
             $newData[] = $row;
         }
@@ -98,7 +97,7 @@ class StringTransformer
 
         foreach ($data as $row) {
             if ($row[$fieldIndex] !== null) {
-                $row[$fieldIndex] = ltrim((string)$row[$fieldIndex], $characters);
+                $row[$fieldIndex] = ltrim((string) $row[$fieldIndex], $characters);
             }
             $newData[] = $row;
         }
@@ -122,7 +121,7 @@ class StringTransformer
 
         foreach ($data as $row) {
             if ($row[$fieldIndex] !== null) {
-                $row[$fieldIndex] = rtrim((string)$row[$fieldIndex], $characters);
+                $row[$fieldIndex] = rtrim((string) $row[$fieldIndex], $characters);
             }
             $newData[] = $row;
         }
@@ -148,8 +147,8 @@ class StringTransformer
         foreach ($data as $row) {
             if ($row[$fieldIndex] !== null) {
                 $row[$fieldIndex] = $length === null
-                    ? substr((string)$row[$fieldIndex], $start)
-                    : substr((string)$row[$fieldIndex], $start, $length);
+                    ? substr((string) $row[$fieldIndex], $start)
+                    : substr((string) $row[$fieldIndex], $start, $length);
             }
             $newData[] = $row;
         }
@@ -187,7 +186,7 @@ class StringTransformer
 
         foreach ($data as $row) {
             if ($row[$fieldIndex] !== null) {
-                $row[$fieldIndex] = substr((string)$row[$fieldIndex], -$length);
+                $row[$fieldIndex] = substr((string) $row[$fieldIndex], -$length);
             }
             $newData[] = $row;
         }
@@ -219,7 +218,7 @@ class StringTransformer
 
         foreach ($data as $row) {
             if ($row[$fieldIndex] !== null) {
-                $row[$fieldIndex] = str_pad((string)$row[$fieldIndex], $length, $padString, $padType);
+                $row[$fieldIndex] = str_pad((string) $row[$fieldIndex], $length, $padString, $padType);
             }
             $newData[] = $row;
         }
@@ -257,7 +256,7 @@ class StringTransformer
         foreach ($data as $row) {
             $values = [];
             foreach ($sourceIndices as $idx) {
-                $values[] = (string)($row[$idx] ?? '');
+                $values[] = (string) ($row[$idx] ?? '');
             }
             $row[$targetIndex] = implode($separator, $values);
             $newData[] = $row;
@@ -283,7 +282,7 @@ class StringTransformer
 
         foreach ($data as $row) {
             if ($row[$fieldIndex] !== null) {
-                $row[$fieldIndex] = explode($delimiter, (string)$row[$fieldIndex], $limit);
+                $row[$fieldIndex] = explode($delimiter, (string) $row[$fieldIndex], $limit);
             }
             $newData[] = $row;
         }
@@ -308,7 +307,7 @@ class StringTransformer
 
         foreach ($data as $row) {
             if ($row[$fieldIndex] !== null) {
-                $row[$fieldIndex] = preg_replace($pattern, $replacement, (string)$row[$fieldIndex]);
+                $row[$fieldIndex] = preg_replace($pattern, $replacement, (string) $row[$fieldIndex]);
             }
             $newData[] = $row;
         }
@@ -341,9 +340,10 @@ class StringTransformer
 
         $newData = [];
         foreach ($data as $row) {
-            if ($row[$sourceIndex] !== null && preg_match($pattern, (string)$row[$sourceIndex], $matches)) {
+            if ($row[$sourceIndex] !== null && preg_match($pattern, (string) $row[$sourceIndex], $matches)) {
                 $row[$targetIndex] = $matches[1] ?? null;
-            } else {
+            }
+            else {
                 $row[$targetIndex] = null;
             }
             $newData[] = $row;
@@ -378,8 +378,9 @@ class StringTransformer
         $newData = [];
         foreach ($data as $row) {
             if ($row[$sourceIndex] !== null) {
-                $row[$targetIndex] = (bool)preg_match($pattern, (string)$row[$sourceIndex]);
-            } else {
+                $row[$targetIndex] = (bool) preg_match($pattern, (string) $row[$sourceIndex]);
+            }
+            else {
                 $row[$targetIndex] = false;
             }
             $newData[] = $row;
@@ -408,8 +409,9 @@ class StringTransformer
         $newData = [];
         foreach ($data as $row) {
             if ($row[$sourceIndex] !== null) {
-                $row[$targetIndex] = strlen((string)$row[$sourceIndex]);
-            } else {
+                $row[$targetIndex] = strlen((string) $row[$sourceIndex]);
+            }
+            else {
                 $row[$targetIndex] = 0;
             }
             $newData[] = $row;
@@ -431,6 +433,7 @@ class StringTransformer
         if ($index === false) {
             throw new InvalidArgumentException("Field '$field' not found in header");
         }
+
         return $index;
     }
 }

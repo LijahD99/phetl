@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phetl\Transform\Reshaping;
 
-use Generator;
 use InvalidArgumentException;
 
 /**
@@ -41,11 +40,12 @@ class Reshaper
             // All fields except id fields
             $valueIndices = [];
             foreach ($headers as $index => $field) {
-                if (!in_array($index, $idIndices, true)) {
+                if (! in_array($index, $idIndices, true)) {
                     $valueIndices[$index] = $field;
                 }
             }
-        } else {
+        }
+        else {
             $valueFields = is_array($valueFields) ? $valueFields : [$valueFields];
             $valueIndices = [];
             foreach ($valueFields as $field) {
@@ -132,21 +132,21 @@ class Reshaper
 
         foreach ($data as $row) {
             // Extract index key
-            $indexKey = serialize(array_map(fn($i) => $row[$i] ?? null, $indexIndices));
+            $indexKey = serialize(array_map(fn ($i) => $row[$i] ?? null, $indexIndices));
 
             // Extract column and value
             $colValue = $row[$columnIndex] ?? null;
             $value = $row[$valueIndex] ?? null;
 
             // Track unique column values
-            if (!in_array($colValue, $columnValues, true)) {
+            if (! in_array($colValue, $columnValues, true)) {
                 $columnValues[] = $colValue;
             }
 
             // Store data
-            if (!isset($pivotData[$indexKey])) {
+            if (! isset($pivotData[$indexKey])) {
                 $pivotData[$indexKey] = [
-                    'index_values' => array_map(fn($i) => $row[$i] ?? null, $indexIndices),
+                    'index_values' => array_map(fn ($i) => $row[$i] ?? null, $indexIndices),
                     'columns' => [],
                 ];
             }
@@ -161,7 +161,8 @@ class Reshaper
                     );
                 }
                 // Otherwise keep first value (default behavior)
-            } else {
+            }
+            else {
                 $pivotData[$indexKey]['columns'][$colValue] = $value;
             }
         }
@@ -223,8 +224,6 @@ class Reshaper
         return [$outputHeaders, $transposed];
     }
 
-
-
     /**
      * Get field indices from header.
      *
@@ -260,6 +259,7 @@ class Reshaper
         if ($index === false) {
             throw new InvalidArgumentException("Field '$field' not found in header");
         }
+
         return $index;
     }
 

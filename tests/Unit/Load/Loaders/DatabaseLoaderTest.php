@@ -213,7 +213,8 @@ final class DatabaseLoaderTest extends TestCase
         try {
             $loader->load($data);
             $this->fail('Expected exception was not thrown');
-        } catch (\PDOException $e) {
+        }
+        catch (\PDOException $e) {
             // Expected - transaction should rollback
         }
 

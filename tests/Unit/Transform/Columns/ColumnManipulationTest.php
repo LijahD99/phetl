@@ -96,7 +96,7 @@ class ColumnManipulationTest extends TestCase
 
         $table = Table::fromArray($data)->addColumn(
             'age_in_months',
-            fn(array $row) => $row['age'] * 12
+            fn (array $row) => $row['age'] * 12
         );
 
         $result = $table->toArray();
@@ -115,7 +115,7 @@ class ColumnManipulationTest extends TestCase
 
         $table = Table::fromArray($data)->addColumn(
             'full_name',
-            fn(array $row) => $row['first'] . ' ' . $row['last']
+            fn (array $row) => $row['first'] . ' ' . $row['last']
         );
 
         $result = $table->toArray();
@@ -202,7 +202,7 @@ class ColumnManipulationTest extends TestCase
 
         $table = Table::fromArray($data)
             ->removeColumns('temp')
-            ->addColumn('doubled_age', fn($row) => $row['age'] * 2)
+            ->addColumn('doubled_age', fn ($row) => $row['age'] * 2)
             ->head(1);
 
         $result = $table->toArray();
@@ -221,7 +221,7 @@ class ColumnManipulationTest extends TestCase
 
         $table = Table::fromArray($data)->addColumn(
             'age_doubled',
-            fn(array $row) => $row['age'] !== null ? $row['age'] * 2 : null
+            fn (array $row) => $row['age'] !== null ? $row['age'] * 2 : null
         );
 
         $result = $table->toArray();
@@ -237,8 +237,8 @@ class ColumnManipulationTest extends TestCase
         ];
 
         $table = Table::fromArray($data)
-            ->addColumn('passing', fn($row) => $row['score'] >= 60)
-            ->addColumn('grade', fn($row) => $row['score'] >= 90 ? 'A' : 'B');
+            ->addColumn('passing', fn ($row) => $row['score'] >= 60)
+            ->addColumn('grade', fn ($row) => $row['score'] >= 90 ? 'A' : 'B');
 
         $result = $table->toArray();
         $this->assertIsBool($result[1][2]);

@@ -129,11 +129,13 @@ test('unpivot then aggregate for summary', function () {
         ->aggregate('product', [
             'total_sales' => function ($rows, $header) {
                 $salesIndex = array_search('sales', $header, true);
+
                 return array_sum(array_column($rows, $salesIndex));
             },
             'avg_sales' => function ($rows, $header) {
                 $salesIndex = array_search('sales', $header, true);
                 $sales = array_column($rows, $salesIndex);
+
                 return array_sum($sales) / count($sales);
             },
         ])

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phetl\Transform\Validation;
 
-use Generator;
 use InvalidArgumentException;
 
 /**
@@ -160,7 +159,7 @@ class Validator
         foreach ($data as $rowIndex => $row) {
             $value = $row[$fieldIndex] ?? null;
 
-            if (!preg_match($pattern, (string)$value)) {
+            if (! preg_match($pattern, (string) $value)) {
                 $errors[] = [
                     'row' => $rowIndex + 1,
                     'field' => $field,
@@ -195,7 +194,7 @@ class Validator
         foreach ($data as $rowIndex => $row) {
             $value = $row[$fieldIndex] ?? null;
 
-            if (!in_array($value, $allowedValues, true)) {
+            if (! in_array($value, $allowedValues, true)) {
                 $errors[] = [
                     'row' => $rowIndex + 1,
                     'field' => $field,
@@ -231,7 +230,7 @@ class Validator
         foreach ($data as $rowIndex => $row) {
             $value = $row[$fieldIndex] ?? null;
 
-            if (!$validator($value)) {
+            if (! $validator($value)) {
                 $errors[] = [
                     'row' => $rowIndex + 1,
                     'field' => $field,
@@ -274,7 +273,8 @@ class Validator
                     'message' => "Field \"$field\" must be unique",
                     'value' => $value,
                 ];
-            } else {
+            }
+            else {
                 $seen[$key] = true;
             }
         }
@@ -333,6 +333,7 @@ class Validator
         if ($index === false) {
             throw new InvalidArgumentException("Field '$field' not found in header");
         }
+
         return $index;
     }
 

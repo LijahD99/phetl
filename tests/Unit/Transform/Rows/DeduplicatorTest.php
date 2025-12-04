@@ -114,7 +114,7 @@ describe('Deduplicator', function () {
                 ['Alice', 30],
             ];
 
-            expect(fn() => iterator_to_array(Deduplicator::distinct($data, 'invalid')))
+            expect(fn () => iterator_to_array(Deduplicator::distinct($data, 'invalid')))
                 ->toThrow(InvalidArgumentException::class, "Field 'invalid' not found in header");
         });
     });
@@ -468,7 +468,7 @@ describe('Table deduplication methods', function () {
 
         $result = $table
             ->distinct()
-            ->filter(fn($row) => $row['score'] >= 80)
+            ->filter(fn ($row) => $row['score'] >= 80)
             ->selectColumns('name', 'score')
             ->toArray();
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Phetl\Transform\Rows;
 
 use Closure;
-use Generator;
 use InvalidArgumentException;
 
 /**
@@ -34,7 +33,8 @@ class RowSorter
         if ($key instanceof Closure) {
             // Custom comparator
             usort($rows, $key);
-        } else {
+        }
+        else {
             // Sort by field(s)
             $fields = is_array($key) ? $key : [$key];
             $fieldIndices = self::getFieldIndices($headers, $fields);

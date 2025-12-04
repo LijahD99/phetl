@@ -241,7 +241,8 @@ final class RestApiExtractor implements ExtractorInterface
                 $offset += $pageSize;
                 $pageCount++;
             }
-        } elseif ($type === 'page') {
+        }
+        elseif ($type === 'page') {
             $page = 1;
             $pageSize = $pagination['page_size'] ?? 100;
 
@@ -269,7 +270,8 @@ final class RestApiExtractor implements ExtractorInterface
                 $page++;
                 $pageCount++;
             }
-        } elseif ($type === 'cursor') {
+        }
+        elseif ($type === 'cursor') {
             $cursor = null;
             $dataPath = $pagination['data_path'] ?? null;
             $cursorPath = $pagination['cursor_path'] ?? 'next_cursor';
@@ -291,7 +293,8 @@ final class RestApiExtractor implements ExtractorInterface
                     if (! is_array($data)) {
                         $data = [];
                     }
-                } else {
+                }
+                else {
                     $data = $response;
                 }
 
@@ -394,16 +397,18 @@ final class RestApiExtractor implements ExtractorInterface
             $separator = str_contains($url, '?') ? '&' : '?';
             $url .= $separator . $offsetParam . '=' . $params['offset'];
             $url .= '&' . $limitParam . '=' . $params['limit'];
-        } elseif ($type === 'page') {
+        }
+        elseif ($type === 'page') {
             $pageParam = $pagination['page_param'] ?? 'page';
             $perPageParam = $pagination['per_page_param'] ?? 'per_page';
             $separator = str_contains($url, '?') ? '&' : '?';
             $url .= $separator . $pageParam . '=' . $params['page'];
             $url .= '&' . $perPageParam . '=' . $params['per_page'];
-        } elseif ($type === 'cursor' && $params['cursor'] !== null) {
+        }
+        elseif ($type === 'cursor' && $params['cursor'] !== null) {
             $cursorParam = $pagination['cursor_param'] ?? 'cursor';
             $separator = str_contains($url, '?') ? '&' : '?';
-            $url .= $separator . $cursorParam . '=' . urlencode((string)$params['cursor']);
+            $url .= $separator . $cursorParam . '=' . urlencode((string) $params['cursor']);
         }
 
         return $url;
@@ -558,10 +563,12 @@ final class RestApiExtractor implements ExtractorInterface
 
             if ($type === 'bearer') {
                 $headers['Authorization'] = 'Bearer ' . $auth['token'];
-            } elseif ($type === 'api_key' && ($auth['location'] ?? 'header') === 'header') {
+            }
+            elseif ($type === 'api_key' && ($auth['location'] ?? 'header') === 'header') {
                 $headerName = $auth['header_name'] ?? 'X-API-Key';
                 $headers[$headerName] = $auth['key'];
-            } elseif ($type === 'basic') {
+            }
+            elseif ($type === 'basic') {
                 $credentials = base64_encode($auth['username'] . ':' . $auth['password']);
                 $headers['Authorization'] = 'Basic ' . $credentials;
             }

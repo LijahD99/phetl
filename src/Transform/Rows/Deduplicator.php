@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phetl\Transform\Rows;
 
-use Generator;
 use InvalidArgumentException;
 
 /**
@@ -37,14 +36,15 @@ class Deduplicator
         foreach ($data as $row) {
             // Create key based on specified fields or all fields
             if ($fieldIndices !== null) {
-                $keyValues = array_map(fn($i) => $row[$i] ?? null, $fieldIndices);
-            } else {
+                $keyValues = array_map(fn ($i) => $row[$i] ?? null, $fieldIndices);
+            }
+            else {
                 $keyValues = $row;
             }
 
             $key = serialize($keyValues);
 
-            if (!isset($seen[$key])) {
+            if (! isset($seen[$key])) {
                 $seen[$key] = true;
                 $result[] = $row;
             }
@@ -88,8 +88,9 @@ class Deduplicator
         $counts = [];
         foreach ($data as $row) {
             if ($fieldIndices !== null) {
-                $keyValues = array_map(fn($i) => $row[$i] ?? null, $fieldIndices);
-            } else {
+                $keyValues = array_map(fn ($i) => $row[$i] ?? null, $fieldIndices);
+            }
+            else {
                 $keyValues = $row;
             }
 
@@ -102,14 +103,15 @@ class Deduplicator
         $seen = [];
         foreach ($data as $row) {
             if ($fieldIndices !== null) {
-                $keyValues = array_map(fn($i) => $row[$i] ?? null, $fieldIndices);
-            } else {
+                $keyValues = array_map(fn ($i) => $row[$i] ?? null, $fieldIndices);
+            }
+            else {
                 $keyValues = $row;
             }
 
             $key = serialize($keyValues);
 
-            if ($counts[$key] > 1 && !isset($seen[$key])) {
+            if ($counts[$key] > 1 && ! isset($seen[$key])) {
                 $seen[$key] = true;
                 $result[] = $row;
             }
@@ -147,14 +149,15 @@ class Deduplicator
 
         foreach ($data as $row) {
             if ($fieldIndices !== null) {
-                $keyValues = array_map(fn($i) => $row[$i] ?? null, $fieldIndices);
-            } else {
+                $keyValues = array_map(fn ($i) => $row[$i] ?? null, $fieldIndices);
+            }
+            else {
                 $keyValues = $row;
             }
 
             $key = serialize($keyValues);
 
-            if (!isset($counts[$key])) {
+            if (! isset($counts[$key])) {
                 $counts[$key] = 0;
                 $firstOccurrence[$key] = $row;
             }
@@ -194,8 +197,9 @@ class Deduplicator
 
         foreach ($data as $row) {
             if ($fieldIndices !== null) {
-                $keyValues = array_map(fn($i) => $row[$i] ?? null, $fieldIndices);
-            } else {
+                $keyValues = array_map(fn ($i) => $row[$i] ?? null, $fieldIndices);
+            }
+            else {
                 $keyValues = $row;
             }
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Transform\Values;
 
-use Phetl\Transform\Values\ConditionalTransformer;
 use InvalidArgumentException;
+use Phetl\Transform\Values\ConditionalTransformer;
 
 describe('when()', function () {
     it('applies condition with then/else values', function () {
@@ -20,7 +20,7 @@ describe('when()', function () {
             ConditionalTransformer::when(
                 $data,
                 'status',
-                fn($val) => $val === 'active',
+                fn ($val) => $val === 'active',
                 'result',
                 'yes',
                 'no'
@@ -44,9 +44,9 @@ describe('when()', function () {
             ConditionalTransformer::when(
                 $data,
                 'amount',
-                fn($val) => $val >= 100,
+                fn ($val) => $val >= 100,
                 'discount',
-                fn($row) => $row[0] * 0.1,
+                fn ($row) => $row[0] * 0.1,
                 0
             )
         );
@@ -66,10 +66,10 @@ describe('when()', function () {
             ConditionalTransformer::when(
                 $data,
                 'amount',
-                fn($val) => $val >= 100,
+                fn ($val) => $val >= 100,
                 'fee',
                 0,
-                fn($row) => $row[0] * 0.05
+                fn ($row) => $row[0] * 0.05
             )
         );
 
@@ -88,7 +88,7 @@ describe('when()', function () {
             ConditionalTransformer::when(
                 $data,
                 'value',
-                fn($val) => $val !== null,
+                fn ($val) => $val !== null,
                 'result',
                 'has value',
                 'no value'
@@ -105,11 +105,11 @@ describe('when()', function () {
             [1],
         ];
 
-        expect(fn() => iterator_to_array(
+        expect(fn () => iterator_to_array(
             ConditionalTransformer::when(
                 $data,
                 'missing',
-                fn($val) => true,
+                fn ($val) => true,
                 'result',
                 'yes',
                 'no'
@@ -128,7 +128,7 @@ describe('when()', function () {
             ConditionalTransformer::when(
                 $data,
                 'status',
-                fn($val) => $val === 'active',
+                fn ($val) => $val === 'active',
                 'status',
                 1,
                 0
@@ -216,7 +216,7 @@ describe('coalesce()', function () {
             [null],
         ];
 
-        expect(fn() => iterator_to_array(
+        expect(fn () => iterator_to_array(
             ConditionalTransformer::coalesce($data, 'result', ['a', 'missing'])
         ))->toThrow(InvalidArgumentException::class);
     });
@@ -227,7 +227,7 @@ describe('coalesce()', function () {
             [1],
         ];
 
-        expect(fn() => iterator_to_array(
+        expect(fn () => iterator_to_array(
             ConditionalTransformer::coalesce($data, 'result', [])
         ))->toThrow(InvalidArgumentException::class);
     });
@@ -247,7 +247,7 @@ describe('nullIf()', function () {
                 $data,
                 'value',
                 'result',
-                fn($val) => $val === 0
+                fn ($val) => $val === 0
             )
         );
 
@@ -268,7 +268,7 @@ describe('nullIf()', function () {
                 $data,
                 'status',
                 'result',
-                fn($val) => $val === 'deleted'
+                fn ($val) => $val === 'deleted'
             )
         );
 
@@ -288,7 +288,7 @@ describe('nullIf()', function () {
                 $data,
                 'value',
                 'value',
-                fn($val) => $val < 0
+                fn ($val) => $val < 0
             )
         );
 
@@ -307,7 +307,7 @@ describe('nullIf()', function () {
                 $data,
                 'value',
                 'result',
-                fn($val) => $val === null
+                fn ($val) => $val === null
             )
         );
 
@@ -364,7 +364,7 @@ describe('ifNull()', function () {
                 $data,
                 'value',
                 'result',
-                fn($row) => $row[1]
+                fn ($row) => $row[1]
             )
         );
 
@@ -390,10 +390,10 @@ describe('case()', function () {
                 'score',
                 'grade',
                 [
-                    [fn($val) => $val >= 90, 'A'],
-                    [fn($val) => $val >= 80, 'B'],
-                    [fn($val) => $val >= 70, 'C'],
-                    [fn($val) => $val >= 60, 'D'],
+                    [fn ($val) => $val >= 90, 'A'],
+                    [fn ($val) => $val >= 80, 'B'],
+                    [fn ($val) => $val >= 70, 'C'],
+                    [fn ($val) => $val >= 60, 'D'],
                 ],
                 'F'
             )
@@ -419,10 +419,10 @@ describe('case()', function () {
                 'amount',
                 'fee',
                 [
-                    [fn($val) => $val >= 1000, fn($row) => $row[0] * 0.01],
-                    [fn($val) => $val >= 500, fn($row) => $row[0] * 0.02],
+                    [fn ($val) => $val >= 1000, fn ($row) => $row[0] * 0.01],
+                    [fn ($val) => $val >= 500, fn ($row) => $row[0] * 0.02],
                 ],
-                fn($row) => $row[0] * 0.03
+                fn ($row) => $row[0] * 0.03
             )
         );
 
@@ -442,8 +442,8 @@ describe('case()', function () {
                 'value',
                 'result',
                 [
-                    [fn($val) => $val > 100, 'high'],
-                    [fn($val) => $val > 50, 'medium'],
+                    [fn ($val) => $val > 100, 'high'],
+                    [fn ($val) => $val > 50, 'medium'],
                 ],
                 'low'
             )
@@ -464,8 +464,8 @@ describe('case()', function () {
                 'value',
                 'result',
                 [
-                    [fn($val) => $val >= 50, 'first'],
-                    [fn($val) => $val >= 100, 'second'],
+                    [fn ($val) => $val >= 50, 'first'],
+                    [fn ($val) => $val >= 100, 'second'],
                 ],
                 'default'
             )
@@ -503,7 +503,7 @@ describe('Table conditional methods', function () {
         ]);
 
         $result = $table
-            ->when('status', fn($val) => $val === 'active', 'enabled', true, false)
+            ->when('status', fn ($val) => $val === 'active', 'enabled', true, false)
             ->toArray();
 
         expect($result)->toBe([
@@ -539,7 +539,7 @@ describe('Table conditional methods', function () {
         ]);
 
         $result = $table
-            ->nullIf('value', 'clean', fn($val) => $val === -999)
+            ->nullIf('value', 'clean', fn ($val) => $val === -999)
             ->toArray();
 
         expect($result)->toBe([
@@ -577,8 +577,8 @@ describe('Table conditional methods', function () {
 
         $result = $table
             ->case('score', 'grade', [
-                [fn($val) => $val >= 90, 'A'],
-                [fn($val) => $val >= 70, 'C'],
+                [fn ($val) => $val >= 90, 'A'],
+                [fn ($val) => $val >= 70, 'C'],
             ], 'F')
             ->toArray();
 
@@ -599,7 +599,7 @@ describe('Table conditional methods', function () {
 
         $result = $table
             ->coalesce('combined', ['value', 'backup'])
-            ->when('combined', fn($val) => $val >= 10, 'category', 'high', 'low')
+            ->when('combined', fn ($val) => $val >= 10, 'category', 'high', 'low')
             ->toArray();
 
         expect($result)->toBe([

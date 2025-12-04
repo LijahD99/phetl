@@ -245,7 +245,7 @@ describe('Deduplication Pipeline Integration', function () {
         ];
 
         $result = Table::fromArray($transactions)
-            ->filter(fn($row) => $row['status'] === 'completed')
+            ->filter(fn ($row) => $row['status'] === 'completed')
             ->distinct(['user', 'amount'])
             ->toArray();
 

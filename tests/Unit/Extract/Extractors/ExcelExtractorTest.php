@@ -38,7 +38,8 @@ describe('ExcelExtractor', function () {
                     $sheet = $spreadsheet->getActiveSheet();
                     $sheet->setTitle($sheetName);
                     $firstSheet = false;
-                } else {
+                }
+                else {
                     $sheet = $spreadsheet->createSheet();
                     $sheet->setTitle($sheetName);
                 }
@@ -118,7 +119,7 @@ describe('ExcelExtractor', function () {
     });
 
     it('validates file exists', function () {
-        expect(fn() => new ExcelExtractor('/nonexistent/file.xlsx'))
+        expect(fn () => new ExcelExtractor('/nonexistent/file.xlsx'))
             ->toThrow(InvalidArgumentException::class, 'Excel file does not exist');
     });
 
@@ -270,7 +271,7 @@ describe('ExcelExtractor', function () {
         $filePath = $this->tempDir . '/test.xlsx';
         ($this->createSimpleExcel)($filePath, [['Name']]);
 
-        expect(fn() => new ExcelExtractor($filePath, 'NonExistentSheet'))
+        expect(fn () => new ExcelExtractor($filePath, 'NonExistentSheet'))
             ->toThrow(InvalidArgumentException::class, 'Sheet "NonExistentSheet" not found');
     });
 
@@ -278,7 +279,7 @@ describe('ExcelExtractor', function () {
         $filePath = $this->tempDir . '/test.xlsx';
         ($this->createSimpleExcel)($filePath, [['Name']]);
 
-        expect(fn() => new ExcelExtractor($filePath, 99))
+        expect(fn () => new ExcelExtractor($filePath, 99))
             ->toThrow(InvalidArgumentException::class, 'Sheet index 99 not found');
     });
 

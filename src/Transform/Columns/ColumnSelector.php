@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phetl\Transform\Columns;
 
-use Generator;
 use InvalidArgumentException;
 
 /**
@@ -119,7 +118,7 @@ class ColumnSelector
         $keepIndices = [];
 
         foreach ($header as $index => $column) {
-            if (!in_array($column, $columnsToRemove, true)) {
+            if (! in_array($column, $columnsToRemove, true)) {
                 $keepIndices[] = $index;
             }
         }

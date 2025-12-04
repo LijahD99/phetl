@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phetl\Transform\Rows;
 
-use Generator;
 use InvalidArgumentException;
 
 /**
@@ -49,7 +48,7 @@ final class WindowFunctions
             $rowIndex = 0;
             foreach ($rows as $row) {
                 $partition = serialize($row[$partitionIndex] ?? null);
-                if (!isset($partitions[$partition])) {
+                if (! isset($partitions[$partition])) {
                     $partitions[$partition] = [];
                 }
                 $partitions[$partition][] = ['row' => $row, 'index' => $rowIndex++];
@@ -78,8 +77,10 @@ final class WindowFunctions
 
             // Return rows in original order
             ksort($results);
+
             return [$newHeaders, array_values($results)];
-        } else {
+        }
+        else {
             // No partitioning
             $buffer = [];
             $newData = [];
@@ -156,10 +157,13 @@ final class WindowFunctions
 
             // Return rows in original order
             ksort($results);
+
             return [$newHeaders, array_values($results)];
-        } else {
+        }
+        else {
             // Process all rows
             $processedRows = self::applyLead($rows, $fieldIndex, $targetIndex, $offset, $default);
+
             return [$newHeaders, $processedRows];
         }
     }
@@ -226,7 +230,7 @@ final class WindowFunctions
         // Apply ordering if specified
         if ($orderBy !== null) {
             $orderIndex = self::getFieldIndex($headers, $orderBy);
-            usort($rows, fn($a, $b) => ($a[$orderIndex] ?? null) <=> ($b[$orderIndex] ?? null));
+            usort($rows, fn ($a, $b) => ($a[$orderIndex] ?? null) <=> ($b[$orderIndex] ?? null));
         }
 
         // Apply partitioning if specified
@@ -257,8 +261,10 @@ final class WindowFunctions
 
             // Return rows in original order
             ksort($results);
+
             return [$newHeaders, array_values($results)];
-        } else {
+        }
+        else {
             $rowNum = 1;
             $newData = [];
             foreach ($rows as $row) {
@@ -269,6 +275,7 @@ final class WindowFunctions
                 $row[$targetIndex] = $rowNum++;
                 $newData[] = $row;
             }
+
             return [$newHeaders, $newData];
         }
     }
@@ -317,8 +324,10 @@ final class WindowFunctions
             }
 
             return [$newHeaders, $newData];
-        } else {
+        }
+        else {
             $processedRows = self::applyRank($rows, $orderIndex, $targetIndex, $descending);
+
             return [$newHeaders, $processedRows];
         }
     }
@@ -341,6 +350,7 @@ final class WindowFunctions
         // Sort rows
         usort($rows, function ($a, $b) use ($orderIndex, $descending) {
             $result = ($a[$orderIndex] ?? null) <=> ($b[$orderIndex] ?? null);
+
             return $descending ? -$result : $result;
         });
 
@@ -415,8 +425,10 @@ final class WindowFunctions
             }
 
             return [$newHeaders, $newData];
-        } else {
+        }
+        else {
             $processedRows = self::applyDenseRank($rows, $orderIndex, $targetIndex, $descending);
+
             return [$newHeaders, $processedRows];
         }
     }
@@ -439,6 +451,7 @@ final class WindowFunctions
         // Sort rows
         usort($rows, function ($a, $b) use ($orderIndex, $descending) {
             $result = ($a[$orderIndex] ?? null) <=> ($b[$orderIndex] ?? null);
+
             return $descending ? -$result : $result;
         });
 
@@ -512,8 +525,10 @@ final class WindowFunctions
             }
 
             return [$newHeaders, $newData];
-        } else {
+        }
+        else {
             $processedRows = self::applyPercentRank($rows, $orderIndex, $targetIndex, $descending);
+
             return [$newHeaders, $processedRows];
         }
     }
@@ -539,15 +554,18 @@ final class WindowFunctions
         if ($count === 1) {
             if ($targetIndex >= count($rows[0])) {
                 $rows[0][] = 0.0;
-            } else {
+            }
+            else {
                 $rows[0][$targetIndex] = 0.0;
             }
+
             return [$rows[0]];
         }
 
         // Sort rows
         usort($rows, function ($a, $b) use ($orderIndex, $descending) {
             $result = ($a[$orderIndex] ?? null) <=> ($b[$orderIndex] ?? null);
+
             return $descending ? -$result : $result;
         });
 
@@ -570,7 +588,7 @@ final class WindowFunctions
             }
 
             // Calculate percent rank: (rank - 1) / (total - 1)
-            $row[$targetIndex] = (float)(($rank - 1) / ($count - 1));
+            $row[$targetIndex] = (float) (($rank - 1) / ($count - 1));
             $prevValue = $currentValue;
 
             $result[] = $row;
@@ -592,6 +610,7 @@ final class WindowFunctions
         if ($index === false) {
             throw new InvalidArgumentException("Field '$field' not found in header");
         }
+
         return $index;
     }
 
@@ -608,6 +627,7 @@ final class WindowFunctions
 
         if ($index === false) {
             $header[] = $field;
+
             return count($header) - 1;
         }
 

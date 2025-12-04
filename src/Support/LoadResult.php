@@ -26,7 +26,8 @@ final class LoadResult
         private readonly array $errors = [],
         private readonly array $warnings = [],
         private readonly ?float $durationSeconds = null
-    ) {}
+    ) {
+    }
 
     /**
      * Get the number of rows successfully loaded.
@@ -85,7 +86,7 @@ final class LoadResult
      */
     public function hasWarnings(): bool
     {
-        return !empty($this->warnings);
+        return ! empty($this->warnings);
     }
 
     /**
@@ -95,6 +96,6 @@ final class LoadResult
      */
     public function hasErrors(): bool
     {
-        return !empty($this->errors);
+        return ! empty($this->errors);
     }
 }

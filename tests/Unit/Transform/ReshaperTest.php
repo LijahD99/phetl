@@ -177,7 +177,7 @@ test('pivot with custom aggregation function', function () {
         [1, 'B', 30],
     ];
 
-    $result = iterator_to_array(Reshaper::pivot($data, 'id', 'type', 'value', fn($vals) => max($vals)));
+    $result = iterator_to_array(Reshaper::pivot($data, 'id', 'type', 'value', fn ($vals) => max($vals)));
 
     expect($result)->toBe([
         ['id', 'A', 'B'],

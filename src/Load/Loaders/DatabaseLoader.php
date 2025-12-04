@@ -50,7 +50,8 @@ final class DatabaseLoader implements LoaderInterface
             }
 
             $this->pdo->commit();
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             $this->pdo->rollBack();
 
             throw $e;

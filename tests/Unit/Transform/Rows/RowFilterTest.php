@@ -18,7 +18,7 @@ class RowFilterTest extends TestCase
             ['Charlie', 35],
         ];
 
-        $table = Table::fromArray($data)->filter(fn($row) => $row['age'] > 28);
+        $table = Table::fromArray($data)->filter(fn ($row) => $row['age'] > 28);
 
         $result = $table->toArray();
         $this->assertCount(3, $result); // header + 2 rows
@@ -34,7 +34,7 @@ class RowFilterTest extends TestCase
             ['Bob', 25],
         ];
 
-        $table = Table::fromArray($data)->select(fn($row) => $row['age'] >= 30);
+        $table = Table::fromArray($data)->select(fn ($row) => $row['age'] >= 30);
 
         $result = $table->toArray();
         $this->assertCount(2, $result);

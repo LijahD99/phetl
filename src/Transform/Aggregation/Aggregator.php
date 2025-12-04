@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phetl\Transform\Aggregation;
 
-use Generator;
 use InvalidArgumentException;
 
 /**
@@ -80,6 +79,7 @@ class Aggregator
 
         // Grouped count
         $groupByFields = is_array($groupBy) ? $groupBy : [$groupBy];
+
         return self::aggregate($headers, $data, $groupByFields, ['count' => 'count']);
     }
 
@@ -110,6 +110,7 @@ class Aggregator
         }
 
         $groupByFields = is_array($groupBy) ? $groupBy : [$groupBy];
+
         return self::aggregate($headers, $data, $groupByFields, [
             'sum' => function ($rows, $header) use ($field) {
                 $fieldIndex = array_search($field, $header, true);
@@ -120,12 +121,11 @@ class Aggregator
                 foreach ($rows as $row) {
                     $sum += $row[$fieldIndex] ?? 0;
                 }
+
                 return $sum;
-            }
+            },
         ]);
     }
-
-
 
     /**
      * Get field indices from header.
@@ -162,6 +162,7 @@ class Aggregator
         if ($index === false) {
             throw new InvalidArgumentException("Field '$field' not found in header");
         }
+
         return $index;
     }
 
@@ -183,7 +184,7 @@ class Aggregator
             }
 
             $key = serialize($keyValues);
-            if (!isset($groups[$key])) {
+            if (! isset($groups[$key])) {
                 $groups[$key] = [];
             }
             $groups[$key][] = $row;
@@ -240,7 +241,7 @@ class Aggregator
             }
         }
 
-        return !empty($sums) ? array_sum($sums) : 0;
+        return ! empty($sums) ? array_sum($sums) : 0;
     }
 
     /**
@@ -282,7 +283,7 @@ class Aggregator
             }
         }
 
-        return !empty($values) ? min($values) : null;
+        return ! empty($values) ? min($values) : null;
     }
 
     /**
@@ -306,7 +307,7 @@ class Aggregator
             }
         }
 
-        return !empty($values) ? max($values) : null;
+        return ! empty($values) ? max($values) : null;
     }
 
     /**
@@ -325,6 +326,7 @@ class Aggregator
                 $sum += $row[$index];
             }
         }
+
         return $sum;
     }
 }

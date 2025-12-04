@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Phetl\Table;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 

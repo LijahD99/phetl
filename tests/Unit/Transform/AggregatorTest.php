@@ -56,11 +56,13 @@ test('aggregate with custom aggregation function', function () {
     $result = iterator_to_array(Aggregator::aggregate($data, 'dept', [
         'total_salary' => function ($rows, $header) {
             $salaryIndex = array_search('salary', $header, true);
+
             return array_sum(array_column($rows, $salaryIndex));
         },
         'avg_salary' => function ($rows, $header) {
             $salaryIndex = array_search('salary', $header, true);
             $salaries = array_column($rows, $salaryIndex);
+
             return array_sum($salaries) / count($salaries);
         },
     ]));

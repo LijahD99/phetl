@@ -53,11 +53,12 @@ final class CsvExtractor implements ExtractorInterface
                 if ($headerRow !== false) {
                     $headers = array_map('strval', $headerRow);
                 }
-            } else {
+            }
+            else {
                 // Auto-generate headers based on first row column count
                 $firstRow = fgetcsv($handle, 0, $this->delimiter, $this->enclosure, $this->escape);
                 if ($firstRow !== false) {
-                    $headers = array_map(fn($i) => "col_$i", array_keys($firstRow));
+                    $headers = array_map(fn ($i) => "col_$i", array_keys($firstRow));
                     $data[] = $firstRow; // Include first row as data
                 }
             }
@@ -68,7 +69,8 @@ final class CsvExtractor implements ExtractorInterface
             }
 
             return [$headers, $data];
-        } finally {
+        }
+        finally {
             fclose($handle);
         }
     }

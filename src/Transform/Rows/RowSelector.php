@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phetl\Transform\Rows;
 
-use Generator;
 use InvalidArgumentException;
 
 /**
@@ -28,7 +27,7 @@ class RowSelector
 
         return [
             $headers,
-            array_slice($data, 0, $limit)
+            array_slice($data, 0, $limit),
         ];
     }
 
@@ -52,7 +51,7 @@ class RowSelector
 
         return [
             $headers,
-            array_slice($data, -$limit)
+            array_slice($data, -$limit),
         ];
     }
 
@@ -106,7 +105,7 @@ class RowSelector
 
         return [
             $headers,
-            array_slice($data, $count)
+            array_slice($data, $count),
         ];
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phetl\Transform\Set;
 
-use Generator;
 use InvalidArgumentException;
 
 /**
@@ -33,11 +32,12 @@ class SetOperation
 
             if ($expectedHeaders === null) {
                 $expectedHeaders = $headers;
-            } else {
+            }
+            else {
                 // Validate headers match
                 if ($headers !== $expectedHeaders) {
                     throw new InvalidArgumentException(
-                        "Table " . ((int)$tableIndex + 1) . " has different header structure"
+                        "Table " . ((int) $tableIndex + 1) . " has different header structure"
                     );
                 }
             }
@@ -70,7 +70,7 @@ class SetOperation
         foreach ($data as $row) {
             // Serialize row for uniqueness check
             $key = serialize($row);
-            if (!isset($seen[$key])) {
+            if (! isset($seen[$key])) {
                 $seen[$key] = true;
                 $uniqueData[] = $row;
             }
@@ -103,7 +103,7 @@ class SetOperation
 
             // Track all field names
             foreach ($headers as $field) {
-                if (!isset($allFieldIndices[$field])) {
+                if (! isset($allFieldIndices[$field])) {
                     $allFieldIndices[$field] = count($allFieldIndices);
                 }
             }

@@ -60,7 +60,7 @@ describe('Validator', function () {
                 ['Alice', 'alice@example.com'],
             ];
 
-            expect(fn() => Validator::required($headers, $data, ['invalid']))
+            expect(fn () => Validator::required($headers, $data, ['invalid']))
                 ->toThrow(InvalidArgumentException::class, "Field 'invalid' not found");
         });
     });
@@ -273,7 +273,7 @@ describe('Validator', function () {
                 [35],
             ];
 
-            $isAdult = fn($value) => $value >= 18;
+            $isAdult = fn ($value) => $value >= 18;
             $result = Validator::custom($headers, $data, 'age', $isAdult, 'Must be adult');
 
             expect($result['valid'])->toBeTrue();
@@ -287,7 +287,7 @@ describe('Validator', function () {
                 [30],
             ];
 
-            $isAdult = fn($value) => $value >= 18;
+            $isAdult = fn ($value) => $value >= 18;
             $result = Validator::custom($headers, $data, 'age', $isAdult, 'Must be adult');
 
             expect($result['valid'])->toBeFalse();
@@ -405,7 +405,7 @@ describe('Table validation methods', function () {
             ['Bob', 17],  // Too young
         ]);
 
-        expect(fn() => $table->validateOrFail([
+        expect(fn () => $table->validateOrFail([
             'age' => [['range', 18, 65]],
         ]))->toThrow(RuntimeException::class, 'Validation failed');
     });

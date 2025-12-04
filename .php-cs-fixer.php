@@ -47,5 +47,6 @@ return (new PhpCsFixer\Config())
         ],
         'concat_space' => ['spacing' => 'one'],
         'cast_spaces' => ['space' => 'single'],
+        'control_structure_continuation_position' => ['position' => 'next_line'],
     ])
     ->setFinder($finder);

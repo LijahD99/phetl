@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Phetl\Transform\Values;
 
-use Closure;
-use Generator;
 use InvalidArgumentException;
 
 /**
@@ -37,7 +35,8 @@ class ValueConverter
                 if (is_string($converter) && is_callable($converter)) {
                     // Use string as function name (e.g., 'strtoupper', 'intval')
                     $row[$fieldIndex] = $converter($row[$fieldIndex]);
-                } else {
+                }
+                else {
                     /** @var callable $converter */
                     $row[$fieldIndex] = $converter($row[$fieldIndex]);
                 }
@@ -75,7 +74,8 @@ class ValueConverter
                     $converter = $conversions[$field];
                     if (is_string($converter) && is_callable($converter)) {
                         $row[$index] = $converter($row[$index]);
-                    } else {
+                    }
+                    else {
                         /** @var callable $converter */
                         $row[$index] = $converter($row[$index]);
                     }

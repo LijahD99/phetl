@@ -130,7 +130,7 @@ describe('String Transformation Pipeline Integration', function () {
             ->trim('name')
             ->lower('name')
             ->lower('email')
-            ->filter(fn($row) => str_contains($row['email'], '@'))
+            ->filter(fn ($row) => str_contains($row['email'], '@'))
             ->toArray();
 
         expect($result)->toBe([
@@ -272,7 +272,7 @@ describe('String Transformation Pipeline Integration', function () {
 
         $result = Table::fromArray($data)
             ->extractPattern('log_entry', 'severity', '/\[(\w+)\]/')
-            ->filter(fn($row) => in_array($row['severity'], ['ERROR', 'WARNING']))
+            ->filter(fn ($row) => in_array($row['severity'], ['ERROR', 'WARNING'], true))
             ->toArray();
 
         expect($result)->toBe([

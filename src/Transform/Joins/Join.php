@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phetl\Transform\Joins;
 
-use Generator;
 use InvalidArgumentException;
 
 /**
@@ -31,7 +30,7 @@ class Join
         string|array $leftKey,
         string|array|null $rightKey = null
     ): array {
-        $rightKey = $rightKey ?? $leftKey;
+        $rightKey ??= $leftKey;
         $leftKeys = is_array($leftKey) ? $leftKey : [$leftKey];
         $rightKeys = is_array($rightKey) ? $rightKey : [$rightKey];
 
@@ -78,7 +77,7 @@ class Join
         string|array $leftKey,
         string|array|null $rightKey = null
     ): array {
-        $rightKey = $rightKey ?? $leftKey;
+        $rightKey ??= $leftKey;
         $leftKeys = is_array($leftKey) ? $leftKey : [$leftKey];
         $rightKeys = is_array($rightKey) ? $rightKey : [$rightKey];
 
@@ -103,7 +102,8 @@ class Join
                 foreach ($rightLookup['data'][$key] as $rightRow) {
                     $resultData[] = self::mergeRows($leftRow, $rightRow, $rightLookup['keyIndices']);
                 }
-            } else {
+            }
+            else {
                 // No match - yield left row with nulls
                 $resultData[] = array_merge($leftRow, $nullRightRow);
             }
@@ -152,7 +152,7 @@ class Join
             $keyValue = self::extractKeyValue($row, $keyIndices);
             $key = serialize($keyValue);
 
-            if (!isset($lookup[$key])) {
+            if (! isset($lookup[$key])) {
                 $lookup[$key] = [];
             }
             $lookup[$key][] = $row;
@@ -181,6 +181,7 @@ class Join
             $index = array_search($field, $header, true);
             if ($index === false) {
                 $message = "Field '$field' not found in " . ($tableSide ? $tableSide . ' table ' : '') . 'header';
+
                 throw new InvalidArgumentException($message);
             }
             $indices[] = $index;
@@ -202,6 +203,7 @@ class Join
         foreach ($indices as $index) {
             $values[] = $row[$index] ?? null;
         }
+
         return $values;
     }
 
@@ -218,7 +220,7 @@ class Join
         $merged = $leftHeader;
 
         foreach ($rightHeader as $field) {
-            if (!in_array($field, $rightKeys, true)) {
+            if (! in_array($field, $rightKeys, true)) {
                 $merged[] = $field;
             }
         }
@@ -239,7 +241,7 @@ class Join
         $merged = $leftRow;
 
         foreach ($rightRow as $index => $value) {
-            if (!in_array($index, $rightKeyIndices, true)) {
+            if (! in_array($index, $rightKeyIndices, true)) {
                 $merged[] = $value;
             }
         }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Phetl\Transform\Values;
 
-use Generator;
 use InvalidArgumentException;
 
 /**

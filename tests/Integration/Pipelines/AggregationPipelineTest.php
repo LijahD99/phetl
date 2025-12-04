@@ -36,11 +36,13 @@ test('Table aggregate with custom functions', function () {
         'count' => 'count',
         'total_salary' => function ($rows, $header) {
             $salaryIndex = array_search('salary', $header, true);
+
             return array_sum(array_column($rows, $salaryIndex));
         },
         'avg_salary' => function ($rows, $header) {
             $salaryIndex = array_search('salary', $header, true);
             $salaries = array_column($rows, $salaryIndex);
+
             return array_sum($salaries) / count($salaries);
         },
     ])->toArray();
@@ -160,6 +162,7 @@ test('aggregation can be chained with other transformations', function () {
             'count' => 'count',
             'total' => function ($rows, $header) {
                 $amountIndex = array_search('amount', $header, true);
+
                 return array_sum(array_column($rows, $amountIndex));
             },
         ])
@@ -215,6 +218,7 @@ test('aggregate then join with another table', function () {
         ->aggregate('dept', [
             'total_sales' => function ($rows, $header) {
                 $amountIndex = array_search('amount', $header, true);
+
                 return array_sum(array_column($rows, $amountIndex));
             },
         ])

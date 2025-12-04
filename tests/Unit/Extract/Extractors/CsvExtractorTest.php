@@ -74,7 +74,8 @@ final class CsvExtractorTest extends TestCase
 
         try {
             new CsvExtractor($this->testFile);
-        } finally {
+        }
+        finally {
             chmod($this->testFile, 0o644);
         }
     }

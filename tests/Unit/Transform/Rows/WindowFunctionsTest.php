@@ -94,7 +94,7 @@ describe('WindowFunctions', function () {
                 [1, 'A'],
             ];
 
-            expect(fn() => iterator_to_array(WindowFunctions::lag($data, 'invalid', 'result')))
+            expect(fn () => iterator_to_array(WindowFunctions::lag($data, 'invalid', 'result')))
                 ->toThrow(InvalidArgumentException::class, "Field 'invalid' not found");
         });
     });

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Phetl\Transform\Columns;
 
 use Closure;
-use Generator;
 use InvalidArgumentException;
 
 /**
@@ -43,7 +42,8 @@ class ColumnAdder
                     $assocRow[$col] = $row[$index] ?? null;
                 }
                 $computedValue = $value($assocRow);
-            } else {
+            }
+            else {
                 $computedValue = $value;
             }
 
