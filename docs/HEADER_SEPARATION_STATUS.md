@@ -171,7 +171,7 @@ Start here for fastest progress:
 
 After implementation complete:
 
-1. **DIFFERENCES_FROM_PETL.md**
+1. **docs/DIFFERENCES_FROM_PETL.md**
    - Add "Header Separation" section
    - Explain design rationale
    - Show migration examples

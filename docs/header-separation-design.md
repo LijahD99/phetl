@@ -136,7 +136,7 @@ Update all test assertions for new behavior
 
 ## Documentation
 
-Will document in `DIFFERENCES_FROM_PETL.md`:
+Will document in `docs/DIFFERENCES_FROM_PETL.md`:
 - Header separation vs PETL's "header as first row"
 - Rationale for the change
 - Migration examples
