@@ -231,7 +231,7 @@ examples/                        ✓ Created
 ### ✅ Documentation
 - **README.md** - Complete overview with improved structure
 - **CONTRIBUTING.md** - Development standards and workflow
-- **DIFFERENCES_FROM_PETL.md** - ⚠️ Important: Documents intentional differences from Python petl
+- **docs/DIFFERENCES_FROM_PETL.md** - ⚠️ Important: Documents intentional differences from Python petl
   - LoadResult return values vs None (breaking change)
   - Enhanced observability for production ETL
   - Migration guide for petl users
