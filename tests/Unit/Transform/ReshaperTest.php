@@ -5,297 +5,301 @@ declare(strict_types=1);
 use Phetl\Transform\Reshaping\Reshaper;
 
 test('unpivot converts wide to long format', function () {
+    $headers = ['id', 'name', 'Q1', 'Q2', 'Q3'];
     $data = [
-        ['id', 'name', 'Q1', 'Q2', 'Q3'],
         [1, 'Alice', 100, 150, 200],
         [2, 'Bob', 120, 140, 180],
     ];
 
-    $result = iterator_to_array(Reshaper::unpivot($data, 'id'));
+    [$resultHeaders, $resultData] = Reshaper::unpivot($headers, $data, 'id');
 
-    expect($result)->toBe([
-        ['id', 'variable', 'value'],
-        [1, 'name', 'Alice'],
-        [1, 'Q1', 100],
-        [1, 'Q2', 150],
-        [1, 'Q3', 200],
-        [2, 'name', 'Bob'],
-        [2, 'Q1', 120],
-        [2, 'Q2', 140],
-        [2, 'Q3', 180],
-    ]);
+    expect($resultHeaders)->toBe(['id', 'variable', 'value'])
+        ->and($resultData)->toBe([
+            [1, 'name', 'Alice'],
+            [1, 'Q1', 100],
+            [1, 'Q2', 150],
+            [1, 'Q3', 200],
+            [2, 'name', 'Bob'],
+            [2, 'Q1', 120],
+            [2, 'Q2', 140],
+            [2, 'Q3', 180],
+        ]);
 });
 
 test('unpivot with multiple id fields', function () {
+    $headers = ['dept', 'employee', 'Jan', 'Feb'];
     $data = [
-        ['dept', 'employee', 'Jan', 'Feb'],
         ['Sales', 'Alice', 100, 150],
         ['IT', 'Bob', 120, 140],
     ];
 
-    $result = iterator_to_array(Reshaper::unpivot($data, ['dept', 'employee']));
+    [$resultHeaders, $resultData] = Reshaper::unpivot($headers, $data, ['dept', 'employee']);
 
-    expect($result)->toBe([
-        ['dept', 'employee', 'variable', 'value'],
-        ['Sales', 'Alice', 'Jan', 100],
-        ['Sales', 'Alice', 'Feb', 150],
-        ['IT', 'Bob', 'Jan', 120],
-        ['IT', 'Bob', 'Feb', 140],
-    ]);
+    expect($resultHeaders)->toBe(['dept', 'employee', 'variable', 'value'])
+        ->and($resultData)->toBe([
+            ['Sales', 'Alice', 'Jan', 100],
+            ['Sales', 'Alice', 'Feb', 150],
+            ['IT', 'Bob', 'Jan', 120],
+            ['IT', 'Bob', 'Feb', 140],
+        ]);
 });
 
 test('unpivot with specific value fields', function () {
+    $headers = ['id', 'name', 'Q1', 'Q2', 'Q3', 'total'];
     $data = [
-        ['id', 'name', 'Q1', 'Q2', 'Q3', 'total'],
         [1, 'Alice', 100, 150, 200, 450],
         [2, 'Bob', 120, 140, 180, 440],
     ];
 
-    $result = iterator_to_array(Reshaper::unpivot($data, 'id', ['Q1', 'Q2', 'Q3']));
+    [$resultHeaders, $resultData] = Reshaper::unpivot($headers, $data, 'id', ['Q1', 'Q2', 'Q3']);
 
-    expect($result)->toBe([
-        ['id', 'variable', 'value'],
-        [1, 'Q1', 100],
-        [1, 'Q2', 150],
-        [1, 'Q3', 200],
-        [2, 'Q1', 120],
-        [2, 'Q2', 140],
-        [2, 'Q3', 180],
-    ]);
+    expect($resultHeaders)->toBe(['id', 'variable', 'value'])
+        ->and($resultData)->toBe([
+            [1, 'Q1', 100],
+            [1, 'Q2', 150],
+            [1, 'Q3', 200],
+            [2, 'Q1', 120],
+            [2, 'Q2', 140],
+            [2, 'Q3', 180],
+        ]);
 });
 
 test('unpivot with custom column names', function () {
+    $headers = ['id', 'Q1', 'Q2'];
     $data = [
-        ['id', 'Q1', 'Q2'],
         [1, 100, 150],
         [2, 120, 140],
     ];
 
-    $result = iterator_to_array(Reshaper::unpivot($data, 'id', null, 'quarter', 'sales'));
+    [$resultHeaders, $resultData] = Reshaper::unpivot($headers, $data, 'id', null, 'quarter', 'sales');
 
-    expect($result)->toBe([
-        ['id', 'quarter', 'sales'],
-        [1, 'Q1', 100],
-        [1, 'Q2', 150],
-        [2, 'Q1', 120],
-        [2, 'Q2', 140],
-    ]);
+    expect($resultHeaders)->toBe(['id', 'quarter', 'sales'])
+        ->and($resultData)->toBe([
+            [1, 'Q1', 100],
+            [1, 'Q2', 150],
+            [2, 'Q1', 120],
+            [2, 'Q2', 140],
+        ]);
 });
 
 test('melt is alias for unpivot', function () {
+    $headers = ['id', 'Q1', 'Q2'];
     $data = [
-        ['id', 'Q1', 'Q2'],
         [1, 100, 150],
     ];
 
-    $result = iterator_to_array(Reshaper::melt($data, 'id'));
+    [$resultHeaders, $resultData] = Reshaper::melt($headers, $data, 'id');
 
-    expect($result)->toBe([
-        ['id', 'variable', 'value'],
-        [1, 'Q1', 100],
-        [1, 'Q2', 150],
-    ]);
+    expect($resultHeaders)->toBe(['id', 'variable', 'value'])
+        ->and($resultData)->toBe([
+            [1, 'Q1', 100],
+            [1, 'Q2', 150],
+        ]);
 });
 
 test('unpivot throws exception for invalid id field', function () {
+    $headers = ['id', 'name'];
     $data = [
-        ['id', 'name'],
         [1, 'Alice'],
     ];
 
-    iterator_to_array(Reshaper::unpivot($data, 'invalid'));
+    Reshaper::unpivot($headers, $data, 'invalid');
 })->throws(InvalidArgumentException::class, "Field 'invalid' not found in header");
 
 test('unpivot throws exception for invalid value field', function () {
+    $headers = ['id', 'name'];
     $data = [
-        ['id', 'name'],
         [1, 'Alice'],
     ];
 
-    iterator_to_array(Reshaper::unpivot($data, 'id', 'invalid'));
+    Reshaper::unpivot($headers, $data, 'id', 'invalid');
 })->throws(InvalidArgumentException::class, "Field 'invalid' not found in header");
 
 test('pivot converts long to wide format', function () {
+    $headers = ['id', 'quarter', 'sales'];
     $data = [
-        ['id', 'quarter', 'sales'],
         [1, 'Q1', 100],
         [1, 'Q2', 150],
         [2, 'Q1', 120],
         [2, 'Q2', 140],
     ];
 
-    $result = iterator_to_array(Reshaper::pivot($data, 'id', 'quarter', 'sales'));
+    [$resultHeaders, $resultData] = Reshaper::pivot($headers, $data, 'id', 'quarter', 'sales');
 
-    expect($result)->toBe([
-        ['id', 'Q1', 'Q2'],
-        [1, 100, 150],
-        [2, 120, 140],
-    ]);
+    expect($resultHeaders)->toBe(['id', 'Q1', 'Q2'])
+        ->and($resultData)->toBe([
+            [1, 100, 150],
+            [2, 120, 140],
+        ]);
 });
 
 test('pivot with multiple index fields', function () {
+    $headers = ['dept', 'employee', 'month', 'sales'];
     $data = [
-        ['dept', 'employee', 'month', 'sales'],
         ['Sales', 'Alice', 'Jan', 100],
         ['Sales', 'Alice', 'Feb', 150],
         ['IT', 'Bob', 'Jan', 120],
         ['IT', 'Bob', 'Feb', 140],
     ];
 
-    $result = iterator_to_array(Reshaper::pivot($data, ['dept', 'employee'], 'month', 'sales'));
+    [$resultHeaders, $resultData] = Reshaper::pivot($headers, $data, ['dept', 'employee'], 'month', 'sales');
 
-    expect($result)->toBe([
-        ['dept', 'employee', 'Feb', 'Jan'],
-        ['Sales', 'Alice', 150, 100],
-        ['IT', 'Bob', 140, 120],
-    ]);
+    expect($resultHeaders)->toBe(['dept', 'employee', 'Feb', 'Jan'])
+        ->and($resultData)->toBe([
+            ['Sales', 'Alice', 150, 100],
+            ['IT', 'Bob', 140, 120],
+        ]);
 });
 
 test('pivot with aggregation for duplicates', function () {
+    $headers = ['category', 'month', 'sales'];
     $data = [
-        ['category', 'month', 'sales'],
         ['A', 'Jan', 100],
         ['A', 'Jan', 150], // duplicate
         ['A', 'Feb', 200],
         ['B', 'Jan', 120],
     ];
 
-    $result = iterator_to_array(Reshaper::pivot($data, 'category', 'month', 'sales', 'sum'));
+    [$resultHeaders, $resultData] = Reshaper::pivot($headers, $data, 'category', 'month', 'sales', 'sum');
 
-    expect($result)->toBe([
-        ['category', 'Feb', 'Jan'],
-        ['A', 200, 250], // 100 + 150 = 250
-        ['B', null, 120],
-    ]);
+    expect($resultHeaders)->toBe(['category', 'Feb', 'Jan'])
+        ->and($resultData)->toBe([
+            ['A', 200, 250], // 100 + 150 = 250
+            ['B', null, 120],
+        ]);
 });
 
 test('pivot with custom aggregation function', function () {
+    $headers = ['id', 'type', 'value'];
     $data = [
-        ['id', 'type', 'value'],
         [1, 'A', 10],
         [1, 'A', 20],
         [1, 'B', 30],
     ];
 
-    $result = iterator_to_array(Reshaper::pivot($data, 'id', 'type', 'value', fn ($vals) => max($vals)));
+    [$resultHeaders, $resultData] = Reshaper::pivot($headers, $data, 'id', 'type', 'value', fn ($vals) => max($vals));
 
-    expect($result)->toBe([
-        ['id', 'A', 'B'],
-        [1, 20, 30], // max of [10, 20] = 20
-    ]);
+    expect($resultHeaders)->toBe(['id', 'A', 'B'])
+        ->and($resultData)->toBe([
+            [1, 20, 30], // max of [10, 20] = 20
+        ]);
 });
 
 test('pivot uses first value when no aggregation specified', function () {
+    $headers = ['id', 'type', 'value'];
     $data = [
-        ['id', 'type', 'value'],
         [1, 'A', 10],
         [1, 'A', 20], // duplicate - will keep first (10)
     ];
 
-    $result = iterator_to_array(Reshaper::pivot($data, 'id', 'type', 'value'));
+    [$resultHeaders, $resultData] = Reshaper::pivot($headers, $data, 'id', 'type', 'value');
 
-    expect($result)->toBe([
-        ['id', 'A'],
-        [1, 10], // keeps first value
-    ]);
+    expect($resultHeaders)->toBe(['id', 'A'])
+        ->and($resultData)->toBe([
+            [1, 10], // keeps first value
+        ]);
 });
 
 test('pivot handles missing combinations with null', function () {
+    $headers = ['id', 'category', 'value'];
     $data = [
-        ['id', 'category', 'value'],
         [1, 'A', 100],
         [1, 'B', 150],
         [2, 'A', 120],
         // Missing: [2, 'B']
     ];
 
-    $result = iterator_to_array(Reshaper::pivot($data, 'id', 'category', 'value'));
+    [$resultHeaders, $resultData] = Reshaper::pivot($headers, $data, 'id', 'category', 'value');
 
-    expect($result)->toBe([
-        ['id', 'A', 'B'],
-        [1, 100, 150],
-        [2, 120, null], // missing combination
-    ]);
+    expect($resultHeaders)->toBe(['id', 'A', 'B'])
+        ->and($resultData)->toBe([
+            [1, 100, 150],
+            [2, 120, null], // missing combination
+        ]);
 });
 
 test('pivot throws exception for invalid index field', function () {
+    $headers = ['id', 'type', 'value'];
     $data = [
-        ['id', 'type', 'value'],
         [1, 'A', 10],
     ];
 
-    iterator_to_array(Reshaper::pivot($data, 'invalid', 'type', 'value'));
+    Reshaper::pivot($headers, $data, 'invalid', 'type', 'value');
 })->throws(InvalidArgumentException::class, "Field 'invalid' not found in header");
 
 test('pivot throws exception for invalid column field', function () {
+    $headers = ['id', 'type', 'value'];
     $data = [
-        ['id', 'type', 'value'],
         [1, 'A', 10],
     ];
 
-    iterator_to_array(Reshaper::pivot($data, 'id', 'invalid', 'value'));
+    Reshaper::pivot($headers, $data, 'id', 'invalid', 'value');
 })->throws(InvalidArgumentException::class, "Field 'invalid' not found in header");
 
 test('pivot throws exception for invalid value field', function () {
+    $headers = ['id', 'type', 'value'];
     $data = [
-        ['id', 'type', 'value'],
         [1, 'A', 10],
     ];
 
-    iterator_to_array(Reshaper::pivot($data, 'id', 'type', 'invalid'));
+    Reshaper::pivot($headers, $data, 'id', 'type', 'invalid');
 })->throws(InvalidArgumentException::class, "Field 'invalid' not found in header");
 
 test('transpose swaps rows and columns', function () {
+    $headers = ['A', 'B', 'C'];
     $data = [
-        ['A', 'B', 'C'],
         [1, 2, 3],
         [4, 5, 6],
     ];
 
-    $result = iterator_to_array(Reshaper::transpose($data));
+    [$resultHeaders, $resultData] = Reshaper::transpose($headers, $data);
 
-    expect($result)->toBe([
-        ['A', 1, 4],
-        ['B', 2, 5],
-        ['C', 3, 6],
-    ]);
+    // Transposed data: first row becomes headers
+    // ['A', 1, 4], ['B', 2, 5], ['C', 3, 6]
+    // After transpose, first element of each becomes the new header
+    expect($resultHeaders)->toBe(['A', 1, 4])
+        ->and($resultData)->toBe([
+            ['B', 2, 5],
+            ['C', 3, 6],
+        ]);
 });
 
 test('transpose handles uneven rows with null', function () {
+    $headers = ['A', 'B', 'C'];
     $data = [
-        ['A', 'B', 'C'],
         [1, 2],
         [4, 5, 6, 7],
     ];
 
-    $result = iterator_to_array(Reshaper::transpose($data));
+    [$resultHeaders, $resultData] = Reshaper::transpose($headers, $data);
 
-    expect($result)->toBe([
-        ['A', 1, 4],
-        ['B', 2, 5],
-        ['C', null, 6],
-        [null, null, 7],
-    ]);
+    expect($resultHeaders)->toBe(['A', 1, 4])
+        ->and($resultData)->toBe([
+            ['B', 2, 5],
+            ['C', null, 6],
+            [null, null, 7],
+        ]);
 });
 
 test('transpose handles single row', function () {
-    $data = [
-        ['A', 'B', 'C'],
-    ];
+    $headers = ['A', 'B', 'C'];
+    $data = [];
 
-    $result = iterator_to_array(Reshaper::transpose($data));
+    [$resultHeaders, $resultData] = Reshaper::transpose($headers, $data);
 
-    expect($result)->toBe([
-        ['A'],
-        ['B'],
-        ['C'],
-    ]);
+    expect($resultHeaders)->toBe(['A'])
+        ->and($resultData)->toBe([
+            ['B'],
+            ['C'],
+        ]);
 });
 
 test('transpose handles empty table', function () {
+    $headers = [];
     $data = [];
 
-    $result = iterator_to_array(Reshaper::transpose($data));
+    [$resultHeaders, $resultData] = Reshaper::transpose($headers, $data);
 
-    expect($result)->toBe([]);
+    expect($resultHeaders)->toBe(null)
+        ->and($resultData)->toBe([]);
 });

@@ -25,12 +25,10 @@
         "phpoffice/phpspreadsheet": "^5.2"
     },
     "require-dev": {
-        "phpunit/phpunit": "^10.5",
-        "phpstan/phpstan": "^1.10",
-        "phpstan/phpstan-strict-rules": "^1.5",
+        "phpunit/phpunit": "10.5.36",
         "friendsofphp/php-cs-fixer": "^3.40",
         "mockery/mockery": "^1.6",
-        "pestphp/pest": "^2.30"
+        "pestphp/pest": "2.36.0"
     },
     "autoload": {
         "psr-4": {

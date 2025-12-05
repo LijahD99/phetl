@@ -185,7 +185,7 @@ final class CsvLoaderTest extends TestCase
         }
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Directory is not writable');
+        $this->expectExceptionMessage('Cannot create directory');
 
         new CsvLoader('/nonexistent/directory/file.csv');
     }

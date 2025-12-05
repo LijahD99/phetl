@@ -30,13 +30,13 @@ test('ExcelLoader implements LoaderInterface', function () {
 test('it creates excel file with data', function () {
     $loader = new ExcelLoader($this->tempFile);
 
+    $headers = ['Name', 'Age', 'City'];
     $data = [
-        ['Name', 'Age', 'City'],
         ['Alice', 30, 'NYC'],
         ['Bob', 25, 'LA'],
     ];
 
-    $rowCount = $loader->load($data)->rowCount();
+    $rowCount = $loader->load($headers, $data)->rowCount();
 
     expect($rowCount)->toBe(2);
     expect($this->tempFile)->toBeFile();
@@ -59,13 +59,13 @@ test('it creates excel file with data', function () {
 test('it handles empty rows', function () {
     $loader = new ExcelLoader($this->tempFile);
 
+    $headers = ['Name', 'Age'];
     $data = [
-        ['Name', 'Age'],
         [],
         ['Alice', 30],
     ];
 
-    $loader->load($data);
+    $loader->load($headers, $data);
 
     $spreadsheet = IOFactory::load($this->tempFile);
     $worksheet = $spreadsheet->getActiveSheet();
@@ -78,12 +78,12 @@ test('it handles empty rows', function () {
 test('it preserves null values', function () {
     $loader = new ExcelLoader($this->tempFile);
 
+    $headers = ['Name', 'Age', 'City'];
     $data = [
-        ['Name', 'Age', 'City'],
         ['Alice', null, 'NYC'],
     ];
 
-    $loader->load($data);
+    $loader->load($headers, $data);
 
     $spreadsheet = IOFactory::load($this->tempFile);
     $worksheet = $spreadsheet->getActiveSheet();
@@ -94,12 +94,12 @@ test('it preserves null values', function () {
 test('it preserves boolean values', function () {
     $loader = new ExcelLoader($this->tempFile);
 
+    $headers = ['Active', 'Verified'];
     $data = [
-        ['Active', 'Verified'],
         [true, false],
     ];
 
-    $loader->load($data);
+    $loader->load($headers, $data);
 
     $spreadsheet = IOFactory::load($this->tempFile);
     $worksheet = $spreadsheet->getActiveSheet();
@@ -111,12 +111,12 @@ test('it preserves boolean values', function () {
 test('it preserves numeric values', function () {
     $loader = new ExcelLoader($this->tempFile);
 
+    $headers = ['Integer', 'Float'];
     $data = [
-        ['Integer', 'Float'],
         [42, 3.14],
     ];
 
-    $loader->load($data);
+    $loader->load($headers, $data);
 
     $spreadsheet = IOFactory::load($this->tempFile);
     $worksheet = $spreadsheet->getActiveSheet();
@@ -128,12 +128,12 @@ test('it preserves numeric values', function () {
 test('it can write to specific sheet by name', function () {
     $loader = new ExcelLoader($this->tempFile, 'CustomSheet');
 
+    $headers = ['Name', 'Age'];
     $data = [
-        ['Name', 'Age'],
         ['Alice', 30],
     ];
 
-    $loader->load($data);
+    $loader->load($headers, $data);
 
     $spreadsheet = IOFactory::load($this->tempFile);
 
@@ -147,12 +147,12 @@ test('it can write to specific sheet by name', function () {
 test('it can write to specific sheet by index', function () {
     $loader = new ExcelLoader($this->tempFile, 0);
 
+    $headers = ['Name', 'Age'];
     $data = [
-        ['Name', 'Age'],
         ['Alice', 30],
     ];
 
-    $loader->load($data);
+    $loader->load($headers, $data);
 
     $spreadsheet = IOFactory::load($this->tempFile);
     $worksheet = $spreadsheet->getSheet(0);
@@ -169,9 +169,10 @@ test('it creates parent directory if needed', function () {
     $nestedFile = $this->tempDir . '/nested/dir/output.xlsx';
     $loader = new ExcelLoader($nestedFile);
 
-    $data = [['Name'], ['Alice']];
+    $headers = ['Name'];
+    $data = [['Alice']];
 
-    $loader->load($data);
+    $loader->load($headers, $data);
 
     expect($nestedFile)->toBeFile();
 
@@ -184,12 +185,12 @@ test('it creates parent directory if needed', function () {
 test('it handles wide rows', function () {
     $loader = new ExcelLoader($this->tempFile);
 
+    $headers = range('A', 'Z'); // 26 columns
     $data = [
-        range('A', 'Z'), // 26 columns
         range(1, 26),
     ];
 
-    $loader->load($data);
+    $loader->load($headers, $data);
 
     $spreadsheet = IOFactory::load($this->tempFile);
     $worksheet = $spreadsheet->getActiveSheet();
@@ -204,13 +205,14 @@ test('it handles many rows efficiently', function () {
     $loader = new ExcelLoader($this->tempFile);
 
     // Build data array
-    $data = [['ID', 'Value']];
+    $headers = ['ID', 'Value'];
+    $data = [];
 
     for ($i = 1; $i <= 1000; $i++) {
         $data[] = [$i, "Value $i"];
     }
 
-    $loader->load($data);
+    $loader->load($headers, $data);
 
     $spreadsheet = IOFactory::load($this->tempFile);
     $worksheet = $spreadsheet->getActiveSheet();
@@ -224,7 +226,7 @@ test('it handles empty file gracefully', function () {
     $loader = new ExcelLoader($this->tempFile);
 
     // Load empty data
-    $loader->load([]);
+    $loader->load([], []);
 
     expect($this->tempFile)->toBeFile();
 

@@ -9,8 +9,8 @@ use Phetl\Transform\Values\ValueConverter;
 use Phetl\Transform\Values\ValueReplacer;
 
 beforeEach(function (): void {
+    $this->headers = ['name', 'age', 'email'];
     $this->data = [
-        ['name', 'age', 'email'],
         ['Alice', 30, 'alice@example.com'],
         ['Bob', 25, 'bob@example.com'],
         ['Charlie', 35, 'CHARLIE@EXAMPLE.COM'],
@@ -22,64 +22,66 @@ beforeEach(function (): void {
 // ====================
 
 test('convert applies function to field values', function (): void {
-    $result = iterator_to_array(ValueConverter::convert($this->data, 'name', 'strtoupper'));
+    [$headers, $data] = ValueConverter::convert($this->headers, $this->data, 'name', 'strtoupper');
 
-    expect($result[0])->toBe(['name', 'age', 'email'])
-        ->and($result[1])->toBe(['ALICE', 30, 'alice@example.com'])
-        ->and($result[2])->toBe(['BOB', 25, 'bob@example.com'])
-        ->and($result[3])->toBe(['CHARLIE', 35, 'CHARLIE@EXAMPLE.COM']);
+    expect($headers)->toBe(['name', 'age', 'email'])
+        ->and($data[0])->toBe(['ALICE', 30, 'alice@example.com'])
+        ->and($data[1])->toBe(['BOB', 25, 'bob@example.com'])
+        ->and($data[2])->toBe(['CHARLIE', 35, 'CHARLIE@EXAMPLE.COM']);
 });
 
 test('convert applies closure to field values', function (): void {
-    $result = iterator_to_array(ValueConverter::convert(
+    [$headers, $data] = ValueConverter::convert(
+        $this->headers,
         $this->data,
         'age',
         fn ($age) => $age * 2
-    ));
+    );
 
-    expect($result[1][1])->toBe(60)
-        ->and($result[2][1])->toBe(50)
-        ->and($result[3][1])->toBe(70);
+    expect($data[0][1])->toBe(60)
+        ->and($data[1][1])->toBe(50)
+        ->and($data[2][1])->toBe(70);
 });
 
 test('convert works with string function names', function (): void {
-    $result = iterator_to_array(ValueConverter::convert($this->data, 'email', 'strtolower'));
+    [$headers, $data] = ValueConverter::convert($this->headers, $this->data, 'email', 'strtolower');
 
-    expect($result[1][2])->toBe('alice@example.com')
-        ->and($result[2][2])->toBe('bob@example.com')
-        ->and($result[3][2])->toBe('charlie@example.com');
+    expect($data[0][2])->toBe('alice@example.com')
+        ->and($data[1][2])->toBe('bob@example.com')
+        ->and($data[2][2])->toBe('charlie@example.com');
 });
 
 test('convert throws exception for invalid field', function (): void {
-    iterator_to_array(ValueConverter::convert($this->data, 'invalid_field', 'strtoupper'));
+    ValueConverter::convert($this->headers, $this->data, 'invalid_field', 'strtoupper');
 })->throws(InvalidArgumentException::class, "Field 'invalid_field' not found in header");
 
 test('convert handles empty data gracefully', function (): void {
-    $emptyData = [['name', 'age']];
-    $result = iterator_to_array(ValueConverter::convert($emptyData, 'name', 'strtoupper'));
+    $emptyHeaders = ['name', 'age'];
+    $emptyData = [];
+    [$headers, $data] = ValueConverter::convert($emptyHeaders, $emptyData, 'name', 'strtoupper');
 
-    expect($result)->toHaveCount(1)
-        ->and($result[0])->toBe(['name', 'age']);
+    expect($data)->toHaveCount(0)
+        ->and($headers)->toBe(['name', 'age']);
 });
 
 test('convertMultiple applies multiple conversions', function (): void {
-    $result = iterator_to_array(ValueConverter::convertMultiple($this->data, [
+    [$headers, $data] = ValueConverter::convertMultiple($this->headers, $this->data, [
         'name' => 'strtoupper',
         'age' => fn ($age) => $age + 10,
-    ]));
+    ]);
 
-    expect($result[1])->toBe(['ALICE', 40, 'alice@example.com'])
-        ->and($result[2])->toBe(['BOB', 35, 'bob@example.com'])
-        ->and($result[3])->toBe(['CHARLIE', 45, 'CHARLIE@EXAMPLE.COM']);
+    expect($data[0])->toBe(['ALICE', 40, 'alice@example.com'])
+        ->and($data[1])->toBe(['BOB', 35, 'bob@example.com'])
+        ->and($data[2])->toBe(['CHARLIE', 45, 'CHARLIE@EXAMPLE.COM']);
 });
 
 test('convertMultiple ignores non-existent fields', function (): void {
-    $result = iterator_to_array(ValueConverter::convertMultiple($this->data, [
+    [$headers, $data] = ValueConverter::convertMultiple($this->headers, $this->data, [
         'name' => 'strtoupper',
         'invalid_field' => 'strtolower',
-    ]));
+    ]);
 
-    expect($result[1][0])->toBe('ALICE');
+    expect($data[0][0])->toBe('ALICE');
 });
 
 // ====================
@@ -87,74 +89,75 @@ test('convertMultiple ignores non-existent fields', function (): void {
 // ====================
 
 test('replace replaces specific value in field', function (): void {
-    $result = iterator_to_array(ValueReplacer::replace($this->data, 'age', 30, 999));
+    [$headers, $data] = ValueReplacer::replace($this->headers, $this->data, 'age', 30, 999);
 
-    expect($result[1][1])->toBe(999)
-        ->and($result[2][1])->toBe(25)
-        ->and($result[3][1])->toBe(35);
+    expect($data[0][1])->toBe(999)
+        ->and($data[1][1])->toBe(25)
+        ->and($data[2][1])->toBe(35);
 });
 
 test('replace only affects exact matches', function (): void {
-    $result = iterator_to_array(ValueReplacer::replace($this->data, 'name', 'Bob', 'Robert'));
+    [$headers, $data] = ValueReplacer::replace($this->headers, $this->data, 'name', 'Bob', 'Robert');
 
-    expect($result[1][0])->toBe('Alice')
-        ->and($result[2][0])->toBe('Robert')
-        ->and($result[3][0])->toBe('Charlie');
+    expect($data[0][0])->toBe('Alice')
+        ->and($data[1][0])->toBe('Robert')
+        ->and($data[2][0])->toBe('Charlie');
 });
 
 test('replace throws exception for invalid field', function (): void {
-    iterator_to_array(ValueReplacer::replace($this->data, 'invalid_field', 30, 999));
+    ValueReplacer::replace($this->headers, $this->data, 'invalid_field', 30, 999);
 })->throws(InvalidArgumentException::class, "Field 'invalid_field' not found in header");
 
 test('replaceMap replaces multiple values using mapping', function (): void {
-    $result = iterator_to_array(ValueReplacer::replaceMap($this->data, 'age', [
+    [$headers, $data] = ValueReplacer::replaceMap($this->headers, $this->data, 'age', [
         30 => 31,
         25 => 26,
-    ]));
+    ]);
 
-    expect($result[1][1])->toBe(31)
-        ->and($result[2][1])->toBe(26)
-        ->and($result[3][1])->toBe(35); // Unchanged
+    expect($data[0][1])->toBe(31)
+        ->and($data[1][1])->toBe(26)
+        ->and($data[2][1])->toBe(35); // Unchanged
 });
 
 test('replaceMap ignores unmapped values', function (): void {
-    $result = iterator_to_array(ValueReplacer::replaceMap($this->data, 'name', [
+    [$headers, $data] = ValueReplacer::replaceMap($this->headers, $this->data, 'name', [
         'Alice' => 'Alicia',
         'Unknown' => 'N/A',
-    ]));
+    ]);
 
-    expect($result[1][0])->toBe('Alicia')
-        ->and($result[2][0])->toBe('Bob') // Unchanged
-        ->and($result[3][0])->toBe('Charlie'); // Unchanged
+    expect($data[0][0])->toBe('Alicia')
+        ->and($data[1][0])->toBe('Bob') // Unchanged
+        ->and($data[2][0])->toBe('Charlie'); // Unchanged
 });
 
 test('replaceMap throws exception for invalid field', function (): void {
-    iterator_to_array(ValueReplacer::replaceMap($this->data, 'invalid_field', [30 => 31]));
+    ValueReplacer::replaceMap($this->headers, $this->data, 'invalid_field', [30 => 31]);
 })->throws(InvalidArgumentException::class, "Field 'invalid_field' not found in header");
 
 test('replaceAll replaces value across all fields', function (): void {
+    $headers = ['name', 'status', 'category'];
     $data = [
-        ['name', 'status', 'category'],
         ['Alice', 'active', 'VIP'],
         ['Bob', 'inactive', 'active'],
         ['Charlie', 'active', 'regular'],
     ];
 
-    $result = iterator_to_array(ValueReplacer::replaceAll($data, 'active', 'ACTIVE'));
+    [$resultHeaders, $resultData] = ValueReplacer::replaceAll($headers, $data, 'active', 'ACTIVE');
 
-    expect($result[1])->toBe(['Alice', 'ACTIVE', 'VIP'])
-        ->and($result[2])->toBe(['Bob', 'inactive', 'ACTIVE'])
-        ->and($result[3])->toBe(['Charlie', 'ACTIVE', 'regular']);
+    expect($resultData[0])->toBe(['Alice', 'ACTIVE', 'VIP'])
+        ->and($resultData[1])->toBe(['Bob', 'inactive', 'ACTIVE'])
+        ->and($resultData[2])->toBe(['Charlie', 'ACTIVE', 'regular']);
 });
 
 test('replaceAll preserves header', function (): void {
-    $result = iterator_to_array(ValueReplacer::replaceAll($this->data, 'name', 'REPLACED'));
+    [$headers, $data] = ValueReplacer::replaceAll($this->headers, $this->data, 'name', 'REPLACED');
 
-    expect($result[0])->toBe(['name', 'age', 'email']);
+    expect($headers)->toBe(['name', 'age', 'email']);
 });
 
 test('replaceAll handles no matches', function (): void {
-    $result = iterator_to_array(ValueReplacer::replaceAll($this->data, 'nonexistent', 'replaced'));
+    [$headers, $data] = ValueReplacer::replaceAll($this->headers, $this->data, 'nonexistent', 'replaced');
 
-    expect($result)->toEqual($this->data);
+    expect($headers)->toBe($this->headers)
+        ->and($data)->toEqual($this->data);
 });

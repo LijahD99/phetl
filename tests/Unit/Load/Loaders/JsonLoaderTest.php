@@ -36,14 +36,14 @@ final class JsonLoaderTest extends TestCase
 
     public function test_it_loads_data_to_json_file(): void
     {
+        $headers = ['name', 'age', 'city'];
         $data = [
-            ['name', 'age', 'city'],
             ['Alice', 30, 'NYC'],
             ['Bob', 25, 'LA'],
         ];
 
         $loader = new JsonLoader($this->testFile);
-        $rowCount = $loader->load($data)->rowCount();
+        $rowCount = $loader->load($headers, $data)->rowCount();
 
         $this->assertEquals(2, $rowCount);
         $this->assertFileExists($this->testFile);
@@ -60,13 +60,13 @@ final class JsonLoaderTest extends TestCase
 
     public function test_it_handles_pretty_print_option(): void
     {
+        $headers = ['name', 'age'];
         $data = [
-            ['name', 'age'],
             ['Alice', 30],
         ];
 
         $loader = new JsonLoader($this->testFile, prettyPrint: true);
-        $loader->load($data);
+        $loader->load($headers, $data);
 
         $content = file_get_contents($this->testFile);
         $this->assertNotFalse($content);
@@ -78,7 +78,7 @@ final class JsonLoaderTest extends TestCase
     public function test_it_handles_empty_data(): void
     {
         $loader = new JsonLoader($this->testFile);
-        $rowCount = $loader->load([])->rowCount();
+        $rowCount = $loader->load(['name'], [])->rowCount();
 
         $this->assertEquals(0, $rowCount);
         $this->assertFileExists($this->testFile);
@@ -87,12 +87,11 @@ final class JsonLoaderTest extends TestCase
 
     public function test_it_handles_header_only(): void
     {
-        $data = [
-            ['name', 'age', 'city'],
-        ];
+        $headers = ['name', 'age', 'city'];
+        $data = [];
 
         $loader = new JsonLoader($this->testFile);
-        $rowCount = $loader->load($data)->rowCount();
+        $rowCount = $loader->load($headers, $data)->rowCount();
 
         $this->assertEquals(0, $rowCount);
         $content = file_get_contents($this->testFile);
@@ -103,13 +102,13 @@ final class JsonLoaderTest extends TestCase
     {
         file_put_contents($this->testFile, '{"old": "content"}');
 
+        $headers = ['name'];
         $data = [
-            ['name'],
             ['Alice'],
         ];
 
         $loader = new JsonLoader($this->testFile);
-        $loader->load($data);
+        $loader->load($headers, $data);
 
         $content = file_get_contents($this->testFile);
         $this->assertNotFalse($content);
@@ -120,14 +119,14 @@ final class JsonLoaderTest extends TestCase
 
     public function test_it_handles_null_values(): void
     {
+        $headers = ['name', 'age', 'city'];
         $data = [
-            ['name', 'age', 'city'],
             ['Alice', null, 'NYC'],
             ['Bob', 25, null],
         ];
 
         $loader = new JsonLoader($this->testFile);
-        $loader->load($data);
+        $loader->load($headers, $data);
 
         $content = file_get_contents($this->testFile);
         $this->assertNotFalse($content);
@@ -140,13 +139,13 @@ final class JsonLoaderTest extends TestCase
 
     public function test_it_handles_nested_arrays(): void
     {
+        $headers = ['name', 'metadata'];
         $data = [
-            ['name', 'metadata'],
             ['Alice', ['role' => 'admin', 'level' => 5]],
         ];
 
         $loader = new JsonLoader($this->testFile);
-        $loader->load($data);
+        $loader->load($headers, $data);
 
         $content = file_get_contents($this->testFile);
         $this->assertNotFalse($content);
@@ -163,7 +162,7 @@ final class JsonLoaderTest extends TestCase
         }
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Directory is not writable');
+        $this->expectExceptionMessage('Cannot create directory');
 
         new JsonLoader('/nonexistent/directory/file.json');
     }
@@ -173,13 +172,13 @@ final class JsonLoaderTest extends TestCase
         $tempDir = sys_get_temp_dir() . '/phetl_test_' . uniqid();
         $filePath = $tempDir . '/output.json';
 
+        $headers = ['name'];
         $data = [
-            ['name'],
             ['Alice'],
         ];
 
         $loader = new JsonLoader($filePath);
-        $loader->load($data);
+        $loader->load($headers, $data);
 
         $this->assertFileExists($filePath);
 
@@ -190,14 +189,14 @@ final class JsonLoaderTest extends TestCase
 
     public function test_it_preserves_numeric_values(): void
     {
+        $headers = ['name', 'age', 'score'];
         $data = [
-            ['name', 'age', 'score'],
             ['Alice', 30, 95.5],
             ['Bob', 25, 88.3],
         ];
 
         $loader = new JsonLoader($this->testFile);
-        $loader->load($data);
+        $loader->load($headers, $data);
 
         $content = file_get_contents($this->testFile);
         $this->assertNotFalse($content);
@@ -212,14 +211,14 @@ final class JsonLoaderTest extends TestCase
 
     public function test_it_handles_boolean_values(): void
     {
+        $headers = ['name', 'active'];
         $data = [
-            ['name', 'active'],
             ['Alice', true],
             ['Bob', false],
         ];
 
         $loader = new JsonLoader($this->testFile);
-        $loader->load($data);
+        $loader->load($headers, $data);
 
         $content = file_get_contents($this->testFile);
         $this->assertNotFalse($content);

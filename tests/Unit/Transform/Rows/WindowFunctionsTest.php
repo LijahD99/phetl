@@ -7,18 +7,18 @@ use Phetl\Transform\Rows\WindowFunctions;
 describe('WindowFunctions', function () {
     describe('lag()', function () {
         it('returns previous row value', function () {
+            $headers = ['id', 'value'];
             $data = [
-                ['id', 'value'],
                 [1, 'A'],
                 [2, 'B'],
                 [3, 'C'],
                 [4, 'D'],
             ];
 
-            $result = iterator_to_array(WindowFunctions::lag($data, 'value', 'prev_value'));
+            [$resultHeaders, $resultData] = WindowFunctions::lag($headers, $data, 'value', 'prev_value');
 
-            expect($result)->toBe([
-                ['id', 'value', 'prev_value'],
+            expect($resultHeaders)->toBe(['id', 'value', 'prev_value']);
+            expect($resultData)->toBe([
                 [1, 'A', null],
                 [2, 'B', 'A'],
                 [3, 'C', 'B'],
@@ -27,8 +27,8 @@ describe('WindowFunctions', function () {
         });
 
         it('supports custom offset', function () {
+            $headers = ['id', 'value'];
             $data = [
-                ['id', 'value'],
                 [1, 10],
                 [2, 20],
                 [3, 30],
@@ -36,10 +36,10 @@ describe('WindowFunctions', function () {
                 [5, 50],
             ];
 
-            $result = iterator_to_array(WindowFunctions::lag($data, 'value', 'lag2', 2));
+            [$resultHeaders, $resultData] = WindowFunctions::lag($headers, $data, 'value', 'lag2', 2);
 
-            expect($result)->toBe([
-                ['id', 'value', 'lag2'],
+            expect($resultHeaders)->toBe(['id', 'value', 'lag2']);
+            expect($resultData)->toBe([
                 [1, 10, null],
                 [2, 20, null],
                 [3, 30, 10],
@@ -49,17 +49,17 @@ describe('WindowFunctions', function () {
         });
 
         it('supports default value', function () {
+            $headers = ['id', 'value'];
             $data = [
-                ['id', 'value'],
                 [1, 'A'],
                 [2, 'B'],
                 [3, 'C'],
             ];
 
-            $result = iterator_to_array(WindowFunctions::lag($data, 'value', 'prev_value', 1, 'N/A'));
+            [$resultHeaders, $resultData] = WindowFunctions::lag($headers, $data, 'value', 'prev_value', 1, 'N/A');
 
-            expect($result)->toBe([
-                ['id', 'value', 'prev_value'],
+            expect($resultHeaders)->toBe(['id', 'value', 'prev_value']);
+            expect($resultData)->toBe([
                 [1, 'A', 'N/A'],
                 [2, 'B', 'A'],
                 [3, 'C', 'B'],
@@ -67,8 +67,8 @@ describe('WindowFunctions', function () {
         });
 
         it('supports partition by field', function () {
+            $headers = ['category', 'value'];
             $data = [
-                ['category', 'value'],
                 ['A', 1],
                 ['A', 2],
                 ['B', 3],
@@ -76,10 +76,10 @@ describe('WindowFunctions', function () {
                 ['A', 5],
             ];
 
-            $result = iterator_to_array(WindowFunctions::lag($data, 'value', 'prev_value', 1, null, 'category'));
+            [$resultHeaders, $resultData] = WindowFunctions::lag($headers, $data, 'value', 'prev_value', 1, null, 'category');
 
-            expect($result)->toBe([
-                ['category', 'value', 'prev_value'],
+            expect($resultHeaders)->toBe(['category', 'value', 'prev_value']);
+            expect($resultData)->toBe([
                 ['A', 1, null],
                 ['A', 2, 1],
                 ['B', 3, null],
@@ -89,30 +89,30 @@ describe('WindowFunctions', function () {
         });
 
         it('throws exception for invalid field', function () {
+            $headers = ['id', 'value'];
             $data = [
-                ['id', 'value'],
                 [1, 'A'],
             ];
 
-            expect(fn () => iterator_to_array(WindowFunctions::lag($data, 'invalid', 'result')))
+            expect(fn () => WindowFunctions::lag($headers, $data, 'invalid', 'result'))
                 ->toThrow(InvalidArgumentException::class, "Field 'invalid' not found");
         });
     });
 
     describe('lead()', function () {
         it('returns next row value', function () {
+            $headers = ['id', 'value'];
             $data = [
-                ['id', 'value'],
                 [1, 'A'],
                 [2, 'B'],
                 [3, 'C'],
                 [4, 'D'],
             ];
 
-            $result = iterator_to_array(WindowFunctions::lead($data, 'value', 'next_value'));
+            [$resultHeaders, $resultData] = WindowFunctions::lead($headers, $data, 'value', 'next_value');
 
-            expect($result)->toBe([
-                ['id', 'value', 'next_value'],
+            expect($resultHeaders)->toBe(['id', 'value', 'next_value']);
+            expect($resultData)->toBe([
                 [1, 'A', 'B'],
                 [2, 'B', 'C'],
                 [3, 'C', 'D'],
@@ -121,8 +121,8 @@ describe('WindowFunctions', function () {
         });
 
         it('supports custom offset', function () {
+            $headers = ['id', 'value'];
             $data = [
-                ['id', 'value'],
                 [1, 10],
                 [2, 20],
                 [3, 30],
@@ -130,10 +130,10 @@ describe('WindowFunctions', function () {
                 [5, 50],
             ];
 
-            $result = iterator_to_array(WindowFunctions::lead($data, 'value', 'lead2', 2));
+            [$resultHeaders, $resultData] = WindowFunctions::lead($headers, $data, 'value', 'lead2', 2);
 
-            expect($result)->toBe([
-                ['id', 'value', 'lead2'],
+            expect($resultHeaders)->toBe(['id', 'value', 'lead2']);
+            expect($resultData)->toBe([
                 [1, 10, 30],
                 [2, 20, 40],
                 [3, 30, 50],
@@ -143,17 +143,17 @@ describe('WindowFunctions', function () {
         });
 
         it('supports default value', function () {
+            $headers = ['id', 'value'];
             $data = [
-                ['id', 'value'],
                 [1, 'A'],
                 [2, 'B'],
                 [3, 'C'],
             ];
 
-            $result = iterator_to_array(WindowFunctions::lead($data, 'value', 'next_value', 1, 'END'));
+            [$resultHeaders, $resultData] = WindowFunctions::lead($headers, $data, 'value', 'next_value', 1, 'END');
 
-            expect($result)->toBe([
-                ['id', 'value', 'next_value'],
+            expect($resultHeaders)->toBe(['id', 'value', 'next_value']);
+            expect($resultData)->toBe([
                 [1, 'A', 'B'],
                 [2, 'B', 'C'],
                 [3, 'C', 'END'],
@@ -161,8 +161,8 @@ describe('WindowFunctions', function () {
         });
 
         it('supports partition by field', function () {
+            $headers = ['category', 'value'];
             $data = [
-                ['category', 'value'],
                 ['A', 1],
                 ['A', 2],
                 ['B', 3],
@@ -170,10 +170,10 @@ describe('WindowFunctions', function () {
                 ['A', 5],
             ];
 
-            $result = iterator_to_array(WindowFunctions::lead($data, 'value', 'next_value', 1, null, 'category'));
+            [$resultHeaders, $resultData] = WindowFunctions::lead($headers, $data, 'value', 'next_value', 1, null, 'category');
 
-            expect($result)->toBe([
-                ['category', 'value', 'next_value'],
+            expect($resultHeaders)->toBe(['category', 'value', 'next_value']);
+            expect($resultData)->toBe([
                 ['A', 1, 2],
                 ['A', 2, 5],
                 ['B', 3, 4],
@@ -185,17 +185,17 @@ describe('WindowFunctions', function () {
 
     describe('rowNumber()', function () {
         it('assigns sequential row numbers', function () {
+            $headers = ['name', 'score'];
             $data = [
-                ['name', 'score'],
                 ['Alice', 95],
                 ['Bob', 87],
                 ['Charlie', 92],
             ];
 
-            $result = iterator_to_array(WindowFunctions::rowNumber($data, 'row_num'));
+            [$resultHeaders, $resultData] = WindowFunctions::rowNumber($headers, $data, 'row_num');
 
-            expect($result)->toBe([
-                ['name', 'score', 'row_num'],
+            expect($resultHeaders)->toBe(['name', 'score', 'row_num']);
+            expect($resultData)->toBe([
                 ['Alice', 95, 1],
                 ['Bob', 87, 2],
                 ['Charlie', 92, 3],
@@ -203,8 +203,8 @@ describe('WindowFunctions', function () {
         });
 
         it('supports partition by field', function () {
+            $headers = ['category', 'value'];
             $data = [
-                ['category', 'value'],
                 ['A', 10],
                 ['A', 20],
                 ['B', 30],
@@ -212,10 +212,10 @@ describe('WindowFunctions', function () {
                 ['A', 50],
             ];
 
-            $result = iterator_to_array(WindowFunctions::rowNumber($data, 'row_num', 'category'));
+            [$resultHeaders, $resultData] = WindowFunctions::rowNumber($headers, $data, 'row_num', 'category');
 
-            expect($result)->toBe([
-                ['category', 'value', 'row_num'],
+            expect($resultHeaders)->toBe(['category', 'value', 'row_num']);
+            expect($resultData)->toBe([
                 ['A', 10, 1],
                 ['A', 20, 2],
                 ['B', 30, 1],
@@ -225,17 +225,17 @@ describe('WindowFunctions', function () {
         });
 
         it('supports order by field', function () {
+            $headers = ['name', 'score'];
             $data = [
-                ['name', 'score'],
                 ['Alice', 95],
                 ['Bob', 87],
                 ['Charlie', 92],
             ];
 
-            $result = iterator_to_array(WindowFunctions::rowNumber($data, 'rank', null, 'score'));
+            [$resultHeaders, $resultData] = WindowFunctions::rowNumber($headers, $data, 'rank', null, 'score');
 
-            expect($result)->toBe([
-                ['name', 'score', 'rank'],
+            expect($resultHeaders)->toBe(['name', 'score', 'rank']);
+            expect($resultData)->toBe([
                 ['Bob', 87, 1],
                 ['Charlie', 92, 2],
                 ['Alice', 95, 3],
@@ -243,8 +243,8 @@ describe('WindowFunctions', function () {
         });
 
         it('supports partition and order by', function () {
+            $headers = ['dept', 'name', 'salary'];
             $data = [
-                ['dept', 'name', 'salary'],
                 ['Sales', 'Alice', 50000],
                 ['Sales', 'Bob', 60000],
                 ['IT', 'Charlie', 70000],
@@ -252,10 +252,10 @@ describe('WindowFunctions', function () {
                 ['Sales', 'Eve', 55000],
             ];
 
-            $result = iterator_to_array(WindowFunctions::rowNumber($data, 'rank', 'dept', 'salary'));
+            [$resultHeaders, $resultData] = WindowFunctions::rowNumber($headers, $data, 'rank', 'dept', 'salary');
 
-            expect($result)->toBe([
-                ['dept', 'name', 'salary', 'rank'],
+            expect($resultHeaders)->toBe(['dept', 'name', 'salary', 'rank']);
+            expect($resultData)->toBe([
                 ['Sales', 'Alice', 50000, 1],
                 ['Sales', 'Eve', 55000, 2],
                 ['Sales', 'Bob', 60000, 3],
@@ -267,8 +267,8 @@ describe('WindowFunctions', function () {
 
     describe('rank()', function () {
         it('assigns rank with gaps for ties', function () {
+            $headers = ['name', 'score'];
             $data = [
-                ['name', 'score'],
                 ['Alice', 95],
                 ['Bob', 87],
                 ['Charlie', 95],
@@ -276,10 +276,10 @@ describe('WindowFunctions', function () {
                 ['Eve', 92],
             ];
 
-            $result = iterator_to_array(WindowFunctions::rank($data, 'score', 'rank'));
+            [$resultHeaders, $resultData] = WindowFunctions::rank($headers, $data, 'score', 'rank');
 
-            expect($result)->toBe([
-                ['name', 'score', 'rank'],
+            expect($resultHeaders)->toBe(['name', 'score', 'rank']);
+            expect($resultData)->toBe([
                 ['Bob', 87, 1],
                 ['Dave', 87, 1],
                 ['Eve', 92, 3],
@@ -289,17 +289,17 @@ describe('WindowFunctions', function () {
         });
 
         it('supports descending order', function () {
+            $headers = ['name', 'score'];
             $data = [
-                ['name', 'score'],
                 ['Alice', 95],
                 ['Bob', 87],
                 ['Charlie', 95],
             ];
 
-            $result = iterator_to_array(WindowFunctions::rank($data, 'score', 'rank', null, true));
+            [$resultHeaders, $resultData] = WindowFunctions::rank($headers, $data, 'score', 'rank', null, true);
 
-            expect($result)->toBe([
-                ['name', 'score', 'rank'],
+            expect($resultHeaders)->toBe(['name', 'score', 'rank']);
+            expect($resultData)->toBe([
                 ['Alice', 95, 1],
                 ['Charlie', 95, 1],
                 ['Bob', 87, 3],
@@ -307,8 +307,8 @@ describe('WindowFunctions', function () {
         });
 
         it('supports partition by field', function () {
+            $headers = ['dept', 'name', 'score'];
             $data = [
-                ['dept', 'name', 'score'],
                 ['Sales', 'Alice', 95],
                 ['Sales', 'Bob', 87],
                 ['IT', 'Charlie', 95],
@@ -316,10 +316,10 @@ describe('WindowFunctions', function () {
                 ['Sales', 'Eve', 87],
             ];
 
-            $result = iterator_to_array(WindowFunctions::rank($data, 'score', 'rank', 'dept'));
+            [$resultHeaders, $resultData] = WindowFunctions::rank($headers, $data, 'score', 'rank', 'dept');
 
-            expect($result)->toBe([
-                ['dept', 'name', 'score', 'rank'],
+            expect($resultHeaders)->toBe(['dept', 'name', 'score', 'rank']);
+            expect($resultData)->toBe([
                 ['Sales', 'Bob', 87, 1],
                 ['Sales', 'Eve', 87, 1],
                 ['Sales', 'Alice', 95, 3],
@@ -331,8 +331,8 @@ describe('WindowFunctions', function () {
 
     describe('denseRank()', function () {
         it('assigns rank without gaps', function () {
+            $headers = ['name', 'score'];
             $data = [
-                ['name', 'score'],
                 ['Alice', 95],
                 ['Bob', 87],
                 ['Charlie', 95],
@@ -340,10 +340,10 @@ describe('WindowFunctions', function () {
                 ['Eve', 92],
             ];
 
-            $result = iterator_to_array(WindowFunctions::denseRank($data, 'score', 'rank'));
+            [$resultHeaders, $resultData] = WindowFunctions::denseRank($headers, $data, 'score', 'rank');
 
-            expect($result)->toBe([
-                ['name', 'score', 'rank'],
+            expect($resultHeaders)->toBe(['name', 'score', 'rank']);
+            expect($resultData)->toBe([
                 ['Bob', 87, 1],
                 ['Dave', 87, 1],
                 ['Eve', 92, 2],
@@ -353,17 +353,17 @@ describe('WindowFunctions', function () {
         });
 
         it('supports descending order', function () {
+            $headers = ['name', 'score'];
             $data = [
-                ['name', 'score'],
                 ['Alice', 95],
                 ['Bob', 87],
                 ['Charlie', 92],
             ];
 
-            $result = iterator_to_array(WindowFunctions::denseRank($data, 'score', 'rank', null, true));
+            [$resultHeaders, $resultData] = WindowFunctions::denseRank($headers, $data, 'score', 'rank', null, true);
 
-            expect($result)->toBe([
-                ['name', 'score', 'rank'],
+            expect($resultHeaders)->toBe(['name', 'score', 'rank']);
+            expect($resultData)->toBe([
                 ['Alice', 95, 1],
                 ['Charlie', 92, 2],
                 ['Bob', 87, 3],
@@ -373,40 +373,40 @@ describe('WindowFunctions', function () {
 
     describe('percentRank()', function () {
         it('calculates percentage rank', function () {
+            $headers = ['name', 'score'];
             $data = [
-                ['name', 'score'],
                 ['Alice', 95],
                 ['Bob', 87],
                 ['Charlie', 92],
                 ['Dave', 87],
             ];
 
-            $result = iterator_to_array(WindowFunctions::percentRank($data, 'score', 'pct_rank'));
+            [$resultHeaders, $resultData] = WindowFunctions::percentRank($headers, $data, 'score', 'pct_rank');
 
-            expect($result[0])->toBe(['name', 'score', 'pct_rank']);
-            expect($result[1][2])->toBe(0.0); // Bob - lowest
-            expect($result[2][2])->toBe(0.0); // Dave - tied with Bob
-            expect($result[3][2])->toBeGreaterThan(0.0);
-            expect($result[4][2])->toBe(1.0); // Alice - highest
+            expect($resultHeaders)->toBe(['name', 'score', 'pct_rank']);
+            expect($resultData[0][2])->toBe(0.0); // Bob - lowest
+            expect($resultData[1][2])->toBe(0.0); // Dave - tied with Bob
+            expect($resultData[2][2])->toBeGreaterThan(0.0);
+            expect($resultData[3][2])->toBe(1.0); // Alice - highest
         });
 
         it('handles single row', function () {
+            $headers = ['name', 'score'];
             $data = [
-                ['name', 'score'],
                 ['Alice', 95],
             ];
 
-            $result = iterator_to_array(WindowFunctions::percentRank($data, 'score', 'pct_rank'));
+            [$resultHeaders, $resultData] = WindowFunctions::percentRank($headers, $data, 'score', 'pct_rank');
 
-            expect($result)->toBe([
-                ['name', 'score', 'pct_rank'],
+            expect($resultHeaders)->toBe(['name', 'score', 'pct_rank']);
+            expect($resultData)->toBe([
                 ['Alice', 95, 0.0],
             ]);
         });
 
         it('supports partition by field', function () {
+            $headers = ['dept', 'score'];
             $data = [
-                ['dept', 'score'],
                 ['Sales', 95],
                 ['Sales', 87],
                 ['IT', 92],
@@ -414,42 +414,40 @@ describe('WindowFunctions', function () {
                 ['Sales', 90],
             ];
 
-            $result = iterator_to_array(WindowFunctions::percentRank($data, 'score', 'pct_rank', 'dept'));
+            [$resultHeaders, $resultData] = WindowFunctions::percentRank($headers, $data, 'score', 'pct_rank', 'dept');
 
             // Sales partition: 87, 90, 95 -> 0.0, 0.5, 1.0
             // IT partition: 88, 92 -> 0.0, 1.0
-            expect($result[0])->toBe(['dept', 'score', 'pct_rank']);
+            expect($resultHeaders)->toBe(['dept', 'score', 'pct_rank']);
             // Check that partitions reset
-            expect($result[1][2])->toBe(0.0); // Sales 87 - first in partition
-            expect($result[4][2])->toBe(0.0); // IT 88 - first in partition
+            expect($resultData[0][2])->toBe(0.0); // Sales 87 - first in partition
+            expect($resultData[3][2])->toBe(0.0); // IT 88 - first in partition
         });
     });
 
     describe('edge cases', function () {
         it('handles empty data gracefully', function () {
-            $data = [
-                ['id', 'value'],
-            ];
+            $headers = ['id', 'value'];
+            $data = [];
 
-            $result = iterator_to_array(WindowFunctions::lag($data, 'value', 'prev'));
+            [$resultHeaders, $resultData] = WindowFunctions::lag($headers, $data, 'value', 'prev');
 
-            expect($result)->toBe([
-                ['id', 'value', 'prev'],
-            ]);
+            expect($resultHeaders)->toBe(['id', 'value', 'prev']);
+            expect($resultData)->toBe([]);
         });
 
         it('handles null values in window functions', function () {
+            $headers = ['id', 'value'];
             $data = [
-                ['id', 'value'],
                 [1, 10],
                 [2, null],
                 [3, 30],
             ];
 
-            $result = iterator_to_array(WindowFunctions::lag($data, 'value', 'prev'));
+            [$resultHeaders, $resultData] = WindowFunctions::lag($headers, $data, 'value', 'prev');
 
-            expect($result)->toBe([
-                ['id', 'value', 'prev'],
+            expect($resultHeaders)->toBe(['id', 'value', 'prev']);
+            expect($resultData)->toBe([
                 [1, 10, null],
                 [2, null, 10],
                 [3, 30, null],

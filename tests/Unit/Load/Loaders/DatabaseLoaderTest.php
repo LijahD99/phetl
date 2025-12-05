@@ -36,14 +36,14 @@ final class DatabaseLoaderTest extends TestCase
     {
         $this->pdo->exec('CREATE TABLE users (name TEXT, age INTEGER, city TEXT)');
 
+        $headers = ['name', 'age', 'city'];
         $data = [
-            ['name', 'age', 'city'],
             ['Alice', 30, 'NYC'],
             ['Bob', 25, 'LA'],
         ];
 
         $loader = new DatabaseLoader($this->pdo, 'users');
-        $rowCount = $loader->load($data)->rowCount();
+        $rowCount = $loader->load($headers, $data)->rowCount();
 
         $this->assertEquals(2, $rowCount);
 
@@ -69,7 +69,7 @@ final class DatabaseLoaderTest extends TestCase
         $this->pdo->exec('CREATE TABLE users (name TEXT)');
 
         $loader = new DatabaseLoader($this->pdo, 'users');
-        $rowCount = $loader->load([])->rowCount();
+        $rowCount = $loader->load(['name'], [])->rowCount();
 
         $this->assertEquals(0, $rowCount);
     }
@@ -78,12 +78,11 @@ final class DatabaseLoaderTest extends TestCase
     {
         $this->pdo->exec('CREATE TABLE users (name TEXT, age INTEGER)');
 
-        $data = [
-            ['name', 'age'],
-        ];
+        $headers = ['name', 'age'];
+        $data = [];
 
         $loader = new DatabaseLoader($this->pdo, 'users');
-        $rowCount = $loader->load($data)->rowCount();
+        $rowCount = $loader->load($headers, $data)->rowCount();
 
         $this->assertEquals(0, $rowCount);
 
@@ -98,14 +97,14 @@ final class DatabaseLoaderTest extends TestCase
     {
         $this->pdo->exec('CREATE TABLE users (name TEXT, age INTEGER, city TEXT)');
 
+        $headers = ['name', 'age', 'city'];
         $data = [
-            ['name', 'age', 'city'],
             ['Alice', null, 'NYC'],
             ['Bob', 25, null],
         ];
 
         $loader = new DatabaseLoader($this->pdo, 'users');
-        $loader->load($data);
+        $loader->load($headers, $data);
 
         $stmt = $this->pdo->query('SELECT * FROM users ORDER BY name');
         $this->assertNotFalse($stmt);
@@ -118,15 +117,15 @@ final class DatabaseLoaderTest extends TestCase
     {
         $this->pdo->exec('CREATE TABLE users (name TEXT, age INTEGER)');
 
+        $headers = ['name', 'age'];
         $data = [
-            ['name', 'age'],
             ['Alice', 30],
             ['Bob', 25],
             ['Charlie', 35],
         ];
 
         $loader = new DatabaseLoader($this->pdo, 'users');
-        $rowCount = $loader->load($data)->rowCount();
+        $rowCount = $loader->load($headers, $data)->rowCount();
 
         $this->assertEquals(3, $rowCount);
 
@@ -140,13 +139,13 @@ final class DatabaseLoaderTest extends TestCase
     {
         $this->pdo->exec('CREATE TABLE users (name TEXT, note TEXT)');
 
+        $headers = ['name', 'note'];
         $data = [
-            ['name', 'note'],
             ["O'Brien", 'He said "hello"'],
         ];
 
         $loader = new DatabaseLoader($this->pdo, 'users');
-        $loader->load($data);
+        $loader->load($headers, $data);
 
         $stmt = $this->pdo->query('SELECT * FROM users');
         $this->assertNotFalse($stmt);
@@ -158,8 +157,8 @@ final class DatabaseLoaderTest extends TestCase
 
     public function test_it_handles_nonexistent_table_gracefully(): void
     {
+        $headers = ['name', 'age'];
         $data = [
-            ['name', 'age'],
             ['Alice', 30],
         ];
 
@@ -167,7 +166,7 @@ final class DatabaseLoaderTest extends TestCase
 
         // SQLite PRAGMA doesn't throw for nonexistent tables, returns empty result
         // So no rows will match and insert won't happen
-        $rowCount = $loader->load($data)->rowCount();
+        $rowCount = $loader->load($headers, $data)->rowCount();
 
         // Since table doesn't exist, getTableColumns returns empty, no inserts happen
         $this->assertEquals(1, $rowCount); // Row is processed but not inserted
@@ -178,13 +177,13 @@ final class DatabaseLoaderTest extends TestCase
         $this->pdo->exec('CREATE TABLE users (name TEXT, age INTEGER)');
 
         // Data has more columns than table
+        $headers = ['name', 'age', 'city'];
         $data = [
-            ['name', 'age', 'city'],
             ['Alice', 30, 'NYC'],
         ];
 
         $loader = new DatabaseLoader($this->pdo, 'users');
-        $rowCount = $loader->load($data)->rowCount();
+        $rowCount = $loader->load($headers, $data)->rowCount();
 
         $this->assertEquals(1, $rowCount);
 
@@ -202,8 +201,8 @@ final class DatabaseLoaderTest extends TestCase
         $this->pdo->exec('CREATE TABLE users (name TEXT NOT NULL, age INTEGER)');
 
         // Second row will fail (name is NOT NULL)
+        $headers = ['name', 'age'];
         $data = [
-            ['name', 'age'],
             ['Alice', 30],
             [null, 25], // This should fail
         ];
@@ -211,7 +210,7 @@ final class DatabaseLoaderTest extends TestCase
         $loader = new DatabaseLoader($this->pdo, 'users');
 
         try {
-            $loader->load($data);
+            $loader->load($headers, $data);
             $this->fail('Expected exception was not thrown');
         }
         catch (\PDOException $e) {
@@ -229,13 +228,13 @@ final class DatabaseLoaderTest extends TestCase
     {
         $this->pdo->exec('CREATE TABLE test (int_col INTEGER, real_col REAL, text_col TEXT)');
 
+        $headers = ['int_col', 'real_col', 'text_col'];
         $data = [
-            ['int_col', 'real_col', 'text_col'],
             [42, 3.14, 'hello'],
         ];
 
         $loader = new DatabaseLoader($this->pdo, 'test');
-        $loader->load($data);
+        $loader->load($headers, $data);
 
         $stmt = $this->pdo->query('SELECT * FROM test');
         $this->assertNotFalse($stmt);

@@ -5,111 +5,110 @@ declare(strict_types=1);
 use Phetl\Transform\Joins\Join;
 
 test('inner join with single key', function () {
-    $left = [
-        ['id', 'name'],
+    $leftHeaders = ['id', 'name'];
+    $leftData = [
         [1, 'Alice'],
         [2, 'Bob'],
         [3, 'Charlie'],
     ];
 
-    $right = [
-        ['id', 'age'],
+    $rightHeaders = ['id', 'age'];
+    $rightData = [
         [1, 25],
         [2, 30],
         [4, 35],
     ];
 
-    $result = iterator_to_array(Join::inner($left, $right, 'id'));
+    [$resultHeaders, $resultData] = Join::inner($leftHeaders, $leftData, $rightHeaders, $rightData, 'id');
 
-    expect($result)->toBe([
-        ['id', 'name', 'age'],
+    expect($resultHeaders)->toBe(['id', 'name', 'age']);
+    expect($resultData)->toBe([
         [1, 'Alice', 25],
         [2, 'Bob', 30],
     ]);
 });
 
 test('inner join with different key names', function () {
-    $left = [
-        ['user_id', 'name'],
+    $leftHeaders = ['user_id', 'name'];
+    $leftData = [
         [1, 'Alice'],
         [2, 'Bob'],
     ];
 
-    $right = [
-        ['id', 'age'],
+    $rightHeaders = ['id', 'age'];
+    $rightData = [
         [1, 25],
         [2, 30],
     ];
 
-    $result = iterator_to_array(Join::inner($left, $right, 'user_id', 'id'));
+    [$resultHeaders, $resultData] = Join::inner($leftHeaders, $leftData, $rightHeaders, $rightData, 'user_id', 'id');
 
-    expect($result)->toBe([
-        ['user_id', 'name', 'age'],
+    expect($resultHeaders)->toBe(['user_id', 'name', 'age']);
+    expect($resultData)->toBe([
         [1, 'Alice', 25],
         [2, 'Bob', 30],
     ]);
 });
 
 test('inner join with multiple keys', function () {
-    $left = [
-        ['dept', 'region', 'name'],
+    $leftHeaders = ['dept', 'region', 'name'];
+    $leftData = [
         ['Sales', 'East', 'Alice'],
         ['Sales', 'West', 'Bob'],
         ['IT', 'East', 'Charlie'],
     ];
 
-    $right = [
-        ['dept', 'region', 'budget'],
+    $rightHeaders = ['dept', 'region', 'budget'];
+    $rightData = [
         ['Sales', 'East', 10000],
         ['Sales', 'West', 12000],
         ['IT', 'West', 8000],
     ];
 
-    $result = iterator_to_array(Join::inner($left, $right, ['dept', 'region']));
+    [$resultHeaders, $resultData] = Join::inner($leftHeaders, $leftData, $rightHeaders, $rightData, ['dept', 'region']);
 
-    expect($result)->toBe([
-        ['dept', 'region', 'name', 'budget'],
+    expect($resultHeaders)->toBe(['dept', 'region', 'name', 'budget']);
+    expect($resultData)->toBe([
         ['Sales', 'East', 'Alice', 10000],
         ['Sales', 'West', 'Bob', 12000],
     ]);
 });
 
 test('inner join with no matching rows', function () {
-    $left = [
-        ['id', 'name'],
+    $leftHeaders = ['id', 'name'];
+    $leftData = [
         [1, 'Alice'],
     ];
 
-    $right = [
-        ['id', 'age'],
+    $rightHeaders = ['id', 'age'];
+    $rightData = [
         [2, 25],
     ];
 
-    $result = iterator_to_array(Join::inner($left, $right, 'id'));
+    [$resultHeaders, $resultData] = Join::inner($leftHeaders, $leftData, $rightHeaders, $rightData, 'id');
 
-    expect($result)->toBe([
-        ['id', 'name', 'age'],
-    ]);
+    expect($resultHeaders)->toBe(['id', 'name', 'age']);
+    expect($resultData)->toBe([]);
 });
 
 test('inner join with duplicate keys in right table', function () {
-    $left = [
-        ['id', 'name'],
+    $leftHeaders = ['id', 'name'];
+    $leftData = [
         [1, 'Alice'],
         [2, 'Bob'],
     ];
 
-    $right = [
-        ['id', 'score'],
+    $rightHeaders = ['id', 'score'];
+    $rightData = [
         [1, 90],
         [1, 95],
         [2, 85],
     ];
 
-    $result = iterator_to_array(Join::inner($left, $right, 'id'));
+    [$resultHeaders, $resultData] = Join::inner($leftHeaders, $leftData, $rightHeaders, $rightData, 'id');
 
-    expect($result)->toBe([
-        ['id', 'name', 'score'],
+    expect($resultHeaders)->toBe(['id', 'name', 'score']);
+    expect($resultData)->toBe([
         [1, 'Alice', 90],
         [1, 'Alice', 95],
         [2, 'Bob', 85],
@@ -117,23 +116,23 @@ test('inner join with duplicate keys in right table', function () {
 });
 
 test('left join with single key', function () {
-    $left = [
-        ['id', 'name'],
+    $leftHeaders = ['id', 'name'];
+    $leftData = [
         [1, 'Alice'],
         [2, 'Bob'],
         [3, 'Charlie'],
     ];
 
-    $right = [
-        ['id', 'age'],
+    $rightHeaders = ['id', 'age'];
+    $rightData = [
         [1, 25],
         [2, 30],
     ];
 
-    $result = iterator_to_array(Join::left($left, $right, 'id'));
+    [$resultHeaders, $resultData] = Join::left($leftHeaders, $leftData, $rightHeaders, $rightData, 'id');
 
-    expect($result)->toBe([
-        ['id', 'name', 'age'],
+    expect($resultHeaders)->toBe(['id', 'name', 'age']);
+    expect($resultData)->toBe([
         [1, 'Alice', 25],
         [2, 'Bob', 30],
         [3, 'Charlie', null],
@@ -141,23 +140,23 @@ test('left join with single key', function () {
 });
 
 test('left join with different key names', function () {
-    $left = [
-        ['user_id', 'name'],
+    $leftHeaders = ['user_id', 'name'];
+    $leftData = [
         [1, 'Alice'],
         [2, 'Bob'],
         [3, 'Charlie'],
     ];
 
-    $right = [
-        ['id', 'age'],
+    $rightHeaders = ['id', 'age'];
+    $rightData = [
         [1, 25],
         [2, 30],
     ];
 
-    $result = iterator_to_array(Join::left($left, $right, 'user_id', 'id'));
+    [$resultHeaders, $resultData] = Join::left($leftHeaders, $leftData, $rightHeaders, $rightData, 'user_id', 'id');
 
-    expect($result)->toBe([
-        ['user_id', 'name', 'age'],
+    expect($resultHeaders)->toBe(['user_id', 'name', 'age']);
+    expect($resultData)->toBe([
         [1, 'Alice', 25],
         [2, 'Bob', 30],
         [3, 'Charlie', null],
@@ -165,23 +164,23 @@ test('left join with different key names', function () {
 });
 
 test('left join with multiple keys', function () {
-    $left = [
-        ['dept', 'region', 'name'],
+    $leftHeaders = ['dept', 'region', 'name'];
+    $leftData = [
         ['Sales', 'East', 'Alice'],
         ['Sales', 'West', 'Bob'],
         ['IT', 'East', 'Charlie'],
     ];
 
-    $right = [
-        ['dept', 'region', 'budget'],
+    $rightHeaders = ['dept', 'region', 'budget'];
+    $rightData = [
         ['Sales', 'East', 10000],
         ['IT', 'West', 8000],
     ];
 
-    $result = iterator_to_array(Join::left($left, $right, ['dept', 'region']));
+    [$resultHeaders, $resultData] = Join::left($leftHeaders, $leftData, $rightHeaders, $rightData, ['dept', 'region']);
 
-    expect($result)->toBe([
-        ['dept', 'region', 'name', 'budget'],
+    expect($resultHeaders)->toBe(['dept', 'region', 'name', 'budget']);
+    expect($resultData)->toBe([
         ['Sales', 'East', 'Alice', 10000],
         ['Sales', 'West', 'Bob', null],
         ['IT', 'East', 'Charlie', null],
@@ -189,45 +188,45 @@ test('left join with multiple keys', function () {
 });
 
 test('left join with all matching rows', function () {
-    $left = [
-        ['id', 'name'],
+    $leftHeaders = ['id', 'name'];
+    $leftData = [
         [1, 'Alice'],
         [2, 'Bob'],
     ];
 
-    $right = [
-        ['id', 'age'],
+    $rightHeaders = ['id', 'age'];
+    $rightData = [
         [1, 25],
         [2, 30],
         [3, 35],
     ];
 
-    $result = iterator_to_array(Join::left($left, $right, 'id'));
+    [$resultHeaders, $resultData] = Join::left($leftHeaders, $leftData, $rightHeaders, $rightData, 'id');
 
-    expect($result)->toBe([
-        ['id', 'name', 'age'],
+    expect($resultHeaders)->toBe(['id', 'name', 'age']);
+    expect($resultData)->toBe([
         [1, 'Alice', 25],
         [2, 'Bob', 30],
     ]);
 });
 
 test('left join with duplicate keys in right table', function () {
-    $left = [
-        ['id', 'name'],
+    $leftHeaders = ['id', 'name'];
+    $leftData = [
         [1, 'Alice'],
         [2, 'Bob'],
     ];
 
-    $right = [
-        ['id', 'score'],
+    $rightHeaders = ['id', 'score'];
+    $rightData = [
         [1, 90],
         [1, 95],
     ];
 
-    $result = iterator_to_array(Join::left($left, $right, 'id'));
+    [$resultHeaders, $resultData] = Join::left($leftHeaders, $leftData, $rightHeaders, $rightData, 'id');
 
-    expect($result)->toBe([
-        ['id', 'name', 'score'],
+    expect($resultHeaders)->toBe(['id', 'name', 'score']);
+    expect($resultData)->toBe([
         [1, 'Alice', 90],
         [1, 'Alice', 95],
         [2, 'Bob', null],
@@ -235,23 +234,23 @@ test('left join with duplicate keys in right table', function () {
 });
 
 test('right join with single key', function () {
-    $left = [
-        ['id', 'name'],
+    $leftHeaders = ['id', 'name'];
+    $leftData = [
         [1, 'Alice'],
         [2, 'Bob'],
     ];
 
-    $right = [
-        ['id', 'age'],
+    $rightHeaders = ['id', 'age'];
+    $rightData = [
         [1, 25],
         [2, 30],
         [3, 35],
     ];
 
-    $result = iterator_to_array(Join::right($left, $right, 'id'));
+    [$resultHeaders, $resultData] = Join::right($leftHeaders, $leftData, $rightHeaders, $rightData, 'id');
 
-    expect($result)->toBe([
-        ['id', 'age', 'name'],
+    expect($resultHeaders)->toBe(['id', 'age', 'name']);
+    expect($resultData)->toBe([
         [1, 25, 'Alice'],
         [2, 30, 'Bob'],
         [3, 35, null],
@@ -259,23 +258,23 @@ test('right join with single key', function () {
 });
 
 test('right join with different key names', function () {
-    $left = [
-        ['user_id', 'name'],
+    $leftHeaders = ['user_id', 'name'];
+    $leftData = [
         [1, 'Alice'],
         [2, 'Bob'],
     ];
 
-    $right = [
-        ['id', 'age'],
+    $rightHeaders = ['id', 'age'];
+    $rightData = [
         [1, 25],
         [2, 30],
         [3, 35],
     ];
 
-    $result = iterator_to_array(Join::right($left, $right, 'user_id', 'id'));
+    [$resultHeaders, $resultData] = Join::right($leftHeaders, $leftData, $rightHeaders, $rightData, 'user_id', 'id');
 
-    expect($result)->toBe([
-        ['id', 'age', 'name'],
+    expect($resultHeaders)->toBe(['id', 'age', 'name']);
+    expect($resultData)->toBe([
         [1, 25, 'Alice'],
         [2, 30, 'Bob'],
         [3, 35, null],
@@ -283,23 +282,23 @@ test('right join with different key names', function () {
 });
 
 test('right join with multiple keys', function () {
-    $left = [
-        ['dept', 'region', 'name'],
+    $leftHeaders = ['dept', 'region', 'name'];
+    $leftData = [
         ['Sales', 'East', 'Alice'],
         ['IT', 'West', 'Charlie'],
     ];
 
-    $right = [
-        ['dept', 'region', 'budget'],
+    $rightHeaders = ['dept', 'region', 'budget'];
+    $rightData = [
         ['Sales', 'East', 10000],
         ['Sales', 'West', 12000],
         ['IT', 'East', 8000],
     ];
 
-    $result = iterator_to_array(Join::right($left, $right, ['dept', 'region']));
+    [$resultHeaders, $resultData] = Join::right($leftHeaders, $leftData, $rightHeaders, $rightData, ['dept', 'region']);
 
-    expect($result)->toBe([
-        ['dept', 'region', 'budget', 'name'],
+    expect($resultHeaders)->toBe(['dept', 'region', 'budget', 'name']);
+    expect($resultData)->toBe([
         ['Sales', 'East', 10000, 'Alice'],
         ['Sales', 'West', 12000, null],
         ['IT', 'East', 8000, null],
@@ -307,57 +306,57 @@ test('right join with multiple keys', function () {
 });
 
 test('join throws exception for invalid left key', function () {
-    $left = [
-        ['id', 'name'],
+    $leftHeaders = ['id', 'name'];
+    $leftData = [
         [1, 'Alice'],
     ];
 
-    $right = [
-        ['id', 'age'],
+    $rightHeaders = ['id', 'age'];
+    $rightData = [
         [1, 25],
     ];
 
-    iterator_to_array(Join::inner($left, $right, 'invalid_key'));
+    Join::inner($leftHeaders, $leftData, $rightHeaders, $rightData, 'invalid_key');
 })->throws(InvalidArgumentException::class, "Field 'invalid_key' not found in left table header");
 
 test('join throws exception for invalid right key', function () {
-    $left = [
-        ['id', 'name'],
+    $leftHeaders = ['id', 'name'];
+    $leftData = [
         [1, 'Alice'],
     ];
 
-    $right = [
-        ['id', 'age'],
+    $rightHeaders = ['id', 'age'];
+    $rightData = [
         [1, 25],
     ];
 
-    iterator_to_array(Join::inner($left, $right, 'id', 'invalid_key'));
+    Join::inner($leftHeaders, $leftData, $rightHeaders, $rightData, 'id', 'invalid_key');
 })->throws(InvalidArgumentException::class, "Field 'invalid_key' not found in right table header");
 
 test('join throws exception for invalid left key in array', function () {
-    $left = [
-        ['dept', 'region', 'name'],
+    $leftHeaders = ['dept', 'region', 'name'];
+    $leftData = [
         ['Sales', 'East', 'Alice'],
     ];
 
-    $right = [
-        ['dept', 'region', 'budget'],
+    $rightHeaders = ['dept', 'region', 'budget'];
+    $rightData = [
         ['Sales', 'East', 10000],
     ];
 
-    iterator_to_array(Join::inner($left, $right, ['dept', 'invalid']));
+    Join::inner($leftHeaders, $leftData, $rightHeaders, $rightData, ['dept', 'invalid']);
 })->throws(InvalidArgumentException::class, "Field 'invalid' not found in left table header");
 
 test('join throws exception for invalid right key in array', function () {
-    $left = [
-        ['dept', 'region', 'name'],
+    $leftHeaders = ['dept', 'region', 'name'];
+    $leftData = [
         ['Sales', 'East', 'Alice'],
     ];
 
-    $right = [
-        ['dept', 'region', 'budget'],
+    $rightHeaders = ['dept', 'region', 'budget'];
+    $rightData = [
         ['Sales', 'East', 10000],
     ];
 
-    iterator_to_array(Join::inner($left, $right, ['dept', 'region'], ['dept', 'invalid']));
+    Join::inner($leftHeaders, $leftData, $rightHeaders, $rightData, ['dept', 'region'], ['dept', 'invalid']);
 })->throws(InvalidArgumentException::class, "Field 'invalid' not found in right table header");
