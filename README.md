@@ -1,373 +1,257 @@
 # PHETL - PHP ETL Library
 
-A PHP implementation of Python's [petl](https://petl.readthedocs.io/) library for Extract, Transform, and Load operations on tabular data.
+[![PHP 8.1+](https://img.shields.io/badge/php-8.1%2B-blue.svg)](https://www.php.net/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Tests](https://img.shields.io/badge/tests-589%20passing-brightgreen.svg)](#)
+[![PHPStan](https://img.shields.io/badge/PHPStan-max%20level-brightgreen.svg)](https://phpstan.org/)
+[![PSR-12](https://img.shields.io/badge/PSR--12-compliant-brightgreen.svg)](https://www.php-fig.org/psr/psr-12/)
 
-## Design Goals for PHETL
+A modern PHP library for Extract, Transform, and Load (ETL) operations on tabular data. Inspired by Python's [petl](https://petl.readthedocs.io/) library, PHETL brings powerful data transformation capabilities to PHP with a fluent, chainable API.
 
-1. **Memory Efficient**: Use PHP generators/iterators for lazy evaluation
-2. **Fluent API**: Support method chaining like Laravel Collections
-3. **Type Safe**: Leverage PHP 8+ type hints and strict types
-4. **Composable**: Each transformation is a separate, testable function
-5. **Extensible**: Easy to add custom extractors, transformations, and loaders
-6. **Improved Naming**: Address petl's naming issues (see [Differences from PETL](docs/DIFFERENCES_FROM_PETL.md))
-7. **Compatible**: Match petl's behavior where possible
+## Features
 
-## Project Standards
+- **Fluent API** - Chain transformations together with readable method calls
+- **Multiple Data Sources** - CSV, JSON, Excel, Database, REST APIs
+- **Rich Transformations** - Filter, sort, join, aggregate, pivot, and more
+- **Memory Efficient** - Uses PHP generators for lazy evaluation
+- **Type Safe** - Strict PHP 8.1+ types with PHPStan max level
+- **Production Ready** - Load operations return `LoadResult` with row counts and errors
+- **Well Tested** - 589 tests with comprehensive coverage
 
-- ✅ **PSR-12 Compliant** - Strict adherence to PSR-12 coding standards
-- ✅ **SOLID Principles** - Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion
-- ✅ **TDD (Test-Driven Development)** - Tests written before implementation
-- ✅ **Static Analysis** - PHPStan at maximum level
-- ✅ **Type Safety** - Strict types everywhere (`declare(strict_types=1)`)
-- ✅ **100% Test Coverage** - Comprehensive unit and integration tests
+## Installation
 
-## Implementation Strategy
+```bash
+composer require phetl/phetl
+```
 
-### Phase 1: Core Foundation
-- [ ] Table container interface/class
-- [ ] Iterator-based lazy evaluation
-- [ ] Basic I/O (CSV, array)
-- [ ] Fluent wrapper for method chaining
+## Quick Start
 
-### Phase 2: Basic Transformations
-- [x] head, tail, rowslice
-- [x] cut, cutout
-- [x] cat, stack
-- [x] addfield, addcolumn
-- [x] rename, setheader
+```php
+<?php
 
-### Phase 3: Data Transformations
-- [x] convert, replace
-- [x] select, selecteq, selectgt, etc.
-- [x] sort, mergesort
-- [ ] unique, distinct, duplicates
+use Phetl\Table;
 
-### Phase 4: Advanced Operations
-- [x] join, leftjoin, rightjoin
-- [x] aggregate, rowreduce
-- [ ] melt, recast, pivot
-- [ ] regex operations
+// Load, transform, and save data in one pipeline
+Table::fromCsv('customers.csv')
+    ->whereEquals('status', 'active')
+    ->selectColumns('name', 'email', 'created_at')
+    ->sortBy('created_at')
+    ->toCsv('active_customers.csv');
 
-### Phase 5: Additional Features
-- [ ] Validation framework
-- [ ] Additional I/O formats (JSON, Excel)
-- [ ] Database integration
-- [ ] Optimization and caching
+// Get transformation results
+$result = Table::fromCsv('orders.csv')
+    ->whereGreaterThan('total', 100)
+    ->toJson('large_orders.json');
 
-## Example Usage (Proposed PHP API)
+echo "Exported {$result->rowCount()} orders";
+```
+
+## Documentation
+
+- [Getting Started Guide](docs/getting-started.md) - Installation and basic usage
+- [API Reference](docs/api/) - Complete method documentation
+- [Examples](examples/) - Runnable code examples
+- [Migration from petl](docs/DIFFERENCES_FROM_PETL.md) - For Python petl users
+
+## Examples
+
+### Basic Data Processing
 
 ```php
 use Phetl\Table;
 
-// Functional style
-$table1 = Table::fromCsv('example.csv');
-$table2 = Table::convert($table1, 'foo', 'strtoupper');
-$table3 = Table::convert($table2, 'bar', 'intval');
-$table4 = Table::addField($table3, 'quux', fn($row) => $row['bar'] * $row['baz']);
-$table4->toCsv('output.csv');
+// Create from array
+$table = Table::fromArray([
+    ['name', 'age', 'city'],
+    ['Alice', 30, 'New York'],
+    ['Bob', 25, 'Los Angeles'],
+    ['Charlie', 35, 'Chicago'],
+]);
 
-// Method chaining style
-Table::fromCsv('example.csv')
-    ->convert('foo', 'strtoupper')
-    ->convert('bar', 'intval')
-    ->addField('quux', fn($row) => $row['bar'] * $row['baz'])
+// Filter and transform
+$result = $table
+    ->whereGreaterThan('age', 25)
+    ->addColumn('category', fn($row) => $row['age'] >= 30 ? 'senior' : 'junior')
+    ->sortByDesc('age')
+    ->toArray();
+```
+
+### Working with CSV Files
+
+```php
+// Read, transform, write
+Table::fromCsv('input.csv')
+    ->renameColumns(['old_name' => 'new_name'])
+    ->removeColumns('temp_column')
+    ->whereNotNull('email')
     ->toCsv('output.csv');
-
-// Or with look() for inspection
-Table::fromCsv('example.csv')
-    ->convert('foo', 'strtoupper')
-    ->look(10);  // Display first 10 rows
 ```
 
-## Project Structure Rationale
-
-### The ETL Organization Problem
-
-petl's structure (`IO/`, `Transform/`) doesn't clearly communicate ETL intent:
-- **IO** is ambiguous - both reading AND writing?
-- **Transform** is a catch-all with too many subconcerns mixed together
-- The organization doesn't reflect the natural ETL workflow
-
-### Proposed Structure: ETL-First Architecture
-
-```
-phetl/
-├── src/
-│   ├── Table.php                    # Main table class with fluent API
-│   │
-│   ├── Extract/                     # EXTRACT: Getting data IN
-│   │   ├── Extractors/
-│   │   │   ├── CsvExtractor.php
-│   │   │   ├── JsonExtractor.php
-│   │   │   ├── ExcelExtractor.php
-│   │   │   ├── DatabaseExtractor.php
-│   │   │   ├── ArrayExtractor.php
-│   │   │   ├── XmlExtractor.php
-│   │   │   └── RestApiExtractor.php     # 🔜 For consuming RESTful APIs
-│   │   ├── ExtractorInterface.php
-│   │   └── ExtractorFactory.php
-│   │
-│   ├── Load/                        # LOAD: Sending data OUT
-│   │   ├── Loaders/
-│   │   │   ├── CsvLoader.php
-│   │   │   ├── JsonLoader.php
-│   │   │   ├── ExcelLoader.php
-│   │   │   ├── DatabaseLoader.php
-│   │   │   └── XmlLoader.php
-│   │   ├── LoaderInterface.php
-│   │   └── LoaderFactory.php
-│   │
-│   ├── Transform/                   # TRANSFORM: Manipulating data
-│   │   │
-│   │   ├── Columns/                 # Column-level operations
-│   │   │   ├── ColumnSelector.php   # selectColumns, removeColumns
-│   │   │   ├── ColumnRenamer.php    # rename, prefixColumns
-│   │   │   ├── ColumnAdder.php      # addColumn, addCalculated
-│   │   │   └── ColumnReorder.php    # moveColumn, sortColumns
-│   │   │
-│   │   ├── Rows/                    # Row-level operations
-│   │   │   ├── RowFilter.php        # where*, filter operations
-│   │   │   ├── RowSelector.php      # head, tail, slice
-│   │   │   ├── RowMapper.php        # mapRows, transformRows
-│   │   │   ├── RowSorter.php        # sortBy, orderBy
-│   │   │   └── RowDeduplicator.php  # distinct, unique, removeDuplicates
-│   │   │
-│   │   ├── Values/                  # Cell/value-level operations
-│   │   │   ├── ValueConverter.php   # convert, cast, transform
-│   │   │   ├── ValueReplacer.php    # replace, substitute
-│   │   │   ├── ValueFormatter.php   # format, interpolate
-│   │   │   └── ValueFiller.php      # fillDown, fillRight, coalesce
-│   │   │
-│   │   ├── Joins/                   # Combining tables
-│   │   │   ├── InnerJoin.php
-│   │   │   ├── LeftJoin.php
-│   │   │   ├── RightJoin.php
-│   │   │   ├── OuterJoin.php
-│   │   │   ├── CrossJoin.php
-│   │   │   └── JoinStrategy.php
-│   │   │
-│   │   ├── Aggregation/             # Grouping and aggregating
-│   │   │   ├── GroupBy.php
-│   │   │   ├── Aggregator.php
-│   │   │   ├── Reducer.php
-│   │   │   └── AggregateFunction.php
-│   │   │
-│   │   ├── Reshaping/               # Structural transformations
-│   │   │   ├── Pivot.php            # pivot tables
-│   │   │   ├── Unpivot.php          # melt/unpivot
-│   │   │   ├── Transpose.php        # swap rows/columns
-│   │   │   ├── Flatten.php          # flatten nested
-│   │   │   └── Unflatten.php        # structure from flat
-│   │   │
-│   │   ├── Set/                     # Set operations
-│   │   │   ├── Union.php
-│   │   │   ├── Intersection.php
-│   │   │   ├── Difference.php
-│   │   │   ├── Complement.php
-│   │   │   └── SetOperation.php
-│   │   │
-│   │   └── Validation/              # Data quality
-│   │       ├── Validator.php
-│   │       ├── Constraint.php
-│   │       ├── ValidationRule.php
-│   │       └── ValidationResult.php
-│   │
-│   ├── Engine/                      # Core execution engine
-│   │   ├── Iterator/
-│   │   │   ├── TableIterator.php
-│   │   │   ├── TransformIterator.php
-│   │   │   ├── LazyIterator.php
-│   │   │   └── ChainIterator.php
-│   │   ├── Pipeline/
-│   │   │   ├── Pipeline.php
-│   │   │   ├── PipelineBuilder.php
-│   │   │   └── TransformStep.php
-│   │   ├── Memory/
-│   │   │   ├── BufferManager.php    # Memory management
-│   │   │   ├── DiskSpiller.php      # Spill to disk for large ops
-│   │   │   └── CacheManager.php
-│   │   └── Optimizer/
-│   │       ├── QueryOptimizer.php   # Optimize transform chains
-│   │       └── IndexBuilder.php     # Build indexes for joins
-│   │
-│   ├── Support/                     # Shared utilities
-│   │   ├── Lookups/
-│   │   │   ├── Lookup.php
-│   │   │   ├── FacetedLookup.php
-│   │   │   └── IntervalLookup.php
-│   │   ├── Functions/
-│   │   │   ├── Comparison.php       # Comparison helpers
-│   │   │   ├── Math.php             # Math helpers
-│   │   │   └── String.php           # String helpers
-│   │   ├── Regex/
-│   │   │   ├── RegexMatcher.php
-│   │   │   ├── RegexSplitter.php
-│   │   │   └── RegexCapture.php
-│   │   └── Types/
-│   │       ├── TypeDetector.php
-│   │       ├── TypeConverter.php
-│   │       └── TypeRegistry.php
-│   │
-│   └── Contracts/                   # Interfaces
-│       ├── TableInterface.php
-│       ├── ExtractorInterface.php
-│       ├── LoaderInterface.php
-│       ├── TransformerInterface.php
-│       ├── IteratorInterface.php
-│       └── PipelineInterface.php
-│
-├── tests/
-│   ├── Unit/
-│   │   ├── Extract/
-│   │   ├── Load/
-│   │   ├── Transform/
-│   │   └── Engine/
-│   ├── Integration/
-│   │   ├── Pipelines/
-│   │   └── EndToEnd/
-│   └── Fixtures/
-│       └── sample_data/
-│
-├── docs/
-│   ├── getting-started.md
-│   ├── extractors.md
-│   ├── transformations.md
-│   ├── loaders.md
-│   ├── advanced-pipelines.md
-│   └── migration-from-petl.md
-│
-├── examples/
-│   ├── basic-etl.php
-│   ├── csv-processing.php
-│   ├── database-migration.php
-│   └── data-validation.php
-│
-├── composer.json
-└── README.md
-```
-
-### Key Improvements
-
-#### 1. **Clear ETL Separation**
-- `Extract/` - Clear: "This is how I get data in"
-- `Transform/` - Clear: "This is how I manipulate data"
-- `Load/` - Clear: "This is how I send data out"
-
-#### 2. **Transform Organization by Scope**
-Instead of petl's flat `Transform/` with random groupings, organize by **what** is being transformed:
-
-- **Columns/** - Operations that affect column structure
-- **Rows/** - Operations that filter/select/order rows
-- **Values/** - Operations that change individual cell values
-- **Joins/** - Operations that combine tables
-- **Aggregation/** - Operations that group and reduce
-- **Reshaping/** - Operations that change table structure
-- **Set/** - Set-theoretic operations
-- **Validation/** - Data quality operations
-
-This makes it **immediately clear** where to find or add functionality.
-
-#### 3. **Engine Separation**
-The `Engine/` namespace contains infrastructure that powers everything:
-- Iterator management
-- Pipeline building
-- Memory management
-- Query optimization
-
-This keeps the "how it works" separate from the "what it does".
-
-#### 4. **Support vs Util**
-`Support/` instead of `Util/` - clearer that these are supporting helpers, not miscellaneous utilities.
-
-### Benefits Over petl Structure
-
-| Aspect | petl | PHETL |
-|--------|------|-------|
-| **Find read operations** | `io.csv`, `io.json`, etc. | `Extract/Extractors/` |
-| **Find write operations** | `io.csv`, `io.json`, etc. | `Load/Loaders/` |
-| **Find column operations** | Mixed in `Transform/` | `Transform/Columns/` |
-| **Find row filtering** | `Transform/Selects` | `Transform/Rows/` |
-| **Find joins** | `Transform/Joins` (ok) | `Transform/Joins/` (same) |
-| **Find aggregation** | `Transform/Reductions` | `Transform/Aggregation/` |
-| **Infrastructure** | Mixed everywhere | `Engine/` |
-
-### Usage Implications
-
-This structure makes the API more discoverable:
+### Database Operations
 
 ```php
-use Phetl\Table;
+$pdo = new PDO('mysql:host=localhost;dbname=mydb', 'user', 'pass');
 
-// Clear where functionality comes from
-use Phetl\Extract\Extractors\CsvExtractor;
-use Phetl\Transform\Rows\RowFilter;
-use Phetl\Transform\Aggregation\Aggregator;
-use Phetl\Load\Loaders\DatabaseLoader;
+// Extract from database
+$users = Table::fromDatabase($pdo, 'SELECT * FROM users WHERE active = 1');
 
-// Or use the fluent API (which delegates internally)
-Table::fromCsv('input.csv')      // Uses Extract/CsvExtractor
-    ->whereEquals('status', 'active')  // Uses Transform/Rows/RowFilter
-    ->groupBy('department')      // Uses Transform/Aggregation/GroupBy
-    ->toDatabase($pdo, 'results');  // Uses Load/DatabaseLoader
+// Transform and load to another table
+$users
+    ->selectColumns('id', 'name', 'email')
+    ->addColumn('exported_at', fn() => date('Y-m-d H:i:s'))
+    ->toDatabase($pdo, 'user_exports');
 ```
 
-### Migration Path
-
-For petl compatibility, we can maintain a compatibility layer:
+### REST API Extraction
 
 ```php
-// In src/Compat/Petl.php - maps petl function names to new structure
-namespace Phetl\Compat;
+$data = Table::fromRestApi('https://api.example.com/users', [
+    'auth' => ['type' => 'bearer', 'token' => $apiToken],
+    'pagination' => ['type' => 'offset', 'page_size' => 100],
+    'mapping' => [
+        'data_path' => 'results.users',
+        'fields' => [
+            'id' => 'user_id',
+            'name' => 'profile.full_name',
+        ],
+    ],
+]);
+```
 
-class Petl {
-    public static function fromcsv($path) {
-        return \Phetl\Table::fromCsv($path);
+### Aggregation and Grouping
+
+```php
+Table::fromCsv('sales.csv')
+    ->aggregate('department', [
+        'total_sales' => fn($rows) => array_sum(array_column($rows, 'amount')),
+        'avg_sale' => fn($rows) => array_sum(array_column($rows, 'amount')) / count($rows),
+        'count' => 'count',
+    ])
+    ->sortByDesc('total_sales')
+    ->toJson('department_summary.json', prettyPrint: true);
+```
+
+### Joining Tables
+
+```php
+$orders = Table::fromCsv('orders.csv');
+$customers = Table::fromCsv('customers.csv');
+
+$enriched = $orders
+    ->leftJoin($customers, 'customer_id')
+    ->selectColumns('order_id', 'customer_name', 'total', 'order_date')
+    ->toCsv('enriched_orders.csv');
+```
+
+### Data Validation
+
+```php
+$result = Table::fromCsv('users.csv')
+    ->validate([
+        'email' => ['required', 'email'],
+        'age' => ['required', 'integer', ['min', 18]],
+        'status' => ['required', ['in', ['active', 'inactive']]],
+    ]);
+
+if (!$result['valid']) {
+    foreach ($result['errors'] as $error) {
+        echo "Row {$error['row']}: {$error['message']}\n";
     }
-
-    public static function selecteq($table, $field, $value) {
-        return $table->whereEquals($field, $value);
-    }
-
-    // etc...
 }
 ```
 
-This structure better reflects ETL workflows and makes the codebase more maintainable!
+## Available Transformations
 
-## Technology Stack
+### Row Operations
+- `head(n)`, `tail(n)`, `slice(start, stop)`, `skip(n)`
+- `filter(fn)`, `whereEquals()`, `whereGreaterThan()`, `whereIn()`, etc.
+- `sort()`, `sortBy()`, `sortByDesc()`
+- `distinct()`, `unique()`, `duplicates()`
 
-- **PHP 8.1+** - for modern features (enums, readonly properties, etc.)
-- **Generators/Iterators** - for lazy evaluation
-- **PHPUnit** - testing framework
-- **PHP-CS-Fixer** - code style
-- **PHPStan** - static analysis
+### Column Operations
+- `selectColumns()`, `removeColumns()`
+- `renameColumns()`, `addColumn()`
+- `addRowNumbers()`
 
-## Differences from Python PETL
+### Value Operations
+- `convert()`, `convertMultiple()`
+- `replace()`, `replaceMap()`, `replaceAll()`
+- `upper()`, `lower()`, `trim()`
+- `when()`, `coalesce()`, `ifNull()`, `case()`
 
-While Phetl maintains functional compatibility with Python's petl library, there are some intentional differences that enhance observability and embrace PHP idioms. Most notably:
+### Combining Tables
+- `concat()`, `union()`, `merge()`
+- `innerJoin()`, `leftJoin()`, `rightJoin()`
 
-⚠️ **Load operations return `LoadResult` objects instead of `None`**
+### Reshaping
+- `pivot()`, `unpivot()` / `melt()`
+- `transpose()`
+- `aggregate()`, `groupBy()`, `countBy()`
 
-```php
-// Instead of: etl.tocsv(table, 'output.csv')  # Returns None
-$result = $table->toCsv('output.csv');  // Returns LoadResult
-$rowCount = $result->rowCount();        // Get rows loaded
-```
+### Validation
+- `validate()`, `validateOrFail()`
+- `filterValid()`, `filterInvalid()`
 
-This provides critical observability for production ETL pipelines including row counts, errors, warnings, and performance metrics.
+## Extractors (Data Sources)
 
-📖 **See [DIFFERENCES_FROM_PETL.md](docs/DIFFERENCES_FROM_PETL.md) for complete documentation of differences**
+| Source | Method | Description |
+|--------|--------|-------------|
+| Array | `fromArray($data)` | PHP arrays |
+| CSV | `fromCsv($path)` | CSV files |
+| JSON | `fromJson($path)` | JSON files |
+| Excel | `fromExcel($path, $sheet)` | Excel .xlsx files |
+| Database | `fromDatabase($pdo, $query)` | PDO queries |
+| REST API | `fromRestApi($url, $config)` | RESTful endpoints |
+
+## Loaders (Data Destinations)
+
+| Destination | Method | Returns |
+|-------------|--------|---------|
+| Array | `toArray()` | Array with header + rows |
+| CSV | `toCsv($path)` | `LoadResult` |
+| JSON | `toJson($path)` | `LoadResult` |
+| Excel | `toExcel($path, $sheet)` | `LoadResult` |
+| Database | `toDatabase($pdo, $table)` | `LoadResult` |
+
+All loaders return a `LoadResult` object with:
+- `rowCount()` - Number of rows written
+- `success()` - Whether the operation succeeded
+- `errors()` - Array of error messages
+- `warnings()` - Array of warning messages
+
+## Requirements
+
+- PHP 8.1 or higher
+- `ext-json` for JSON operations
+- `phpoffice/phpspreadsheet` for Excel operations (optional)
 
 ## Contributing
 
-This is a PHP port of the Python petl library. We aim to maintain API compatibility where possible while embracing PHP idioms and best practices.
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+```bash
+# Clone and install
+git clone https://github.com/LijahD99/phetl.git
+cd phetl
+composer install
+
+# Run tests
+composer test
+
+# Check code style
+composer cs:check
+
+# Run static analysis
+composer phpstan
+
+# All quality checks
+composer quality
+```
 
 ## License
 
-TBD (should align with petl's MIT license)
+MIT License. See [LICENSE](LICENSE) for details.
 
-## References
+## Acknowledgments
 
-- [petl documentation](https://petl.readthedocs.io/stable/)
-- [petl GitHub](https://github.com/petl-developers/petl)
-- [Differences from PETL](docs/DIFFERENCES_FROM_PETL.md) - Important for petl users migrating to Phetl
+PHETL is inspired by and aims to be compatible with Python's excellent [petl](https://petl.readthedocs.io/) library. For users familiar with petl, see our [migration guide](docs/DIFFERENCES_FROM_PETL.md).

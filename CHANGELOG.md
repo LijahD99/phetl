@@ -8,51 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Initial project scaffolding
-- PSR-12 code style configuration
-- PHPStan static analysis at max level
-- PHPUnit testing framework
-- SOLID principles documentation
-- TDD workflow guidelines
-- Project structure based on ETL-first architecture
-
-### Changed
-- N/A
-
-### Deprecated
-- N/A
-
-### Removed
-- N/A
-
-### Fixed
-- N/A
-
-### Security
-- N/A
-
----
-
-## Release Template
-
-```markdown
-## [X.Y.Z] - YYYY-MM-DD
-
-### Added
-- New features
-
-### Changed
-- Changes in existing functionality
-
-### Deprecated
-- Soon-to-be removed features
-
-### Removed
-- Removed features
-
-### Fixed
-- Bug fixes
-
-### Security
-- Security fixes
-```
+- Complete ETL library with fluent API
+- **Extractors**: Array, CSV, JSON, Excel, Database, REST API
+- **Loaders**: CSV, JSON, Excel, Database with LoadResult
+- **Row Operations**: filter, sort, head, tail, slice, distinct
+- **Column Operations**: select, remove, rename, add
+- **Value Operations**: convert, replace, string transforms
+- **Joins**: inner, left, right joins with multi-key support
+- **Aggregation**: group by, count, sum, custom aggregations
+- **Reshaping**: pivot, unpivot/melt, transpose
+- **Validation**: required, type, range, pattern, custom rules
+- **Set Operations**: concat, union, merge
+- Comprehensive test suite (589 tests, 1,145 assertions)
+- PSR-12 compliant code style
+- PHPStan max level static analysis
+- Comprehensive documentation and examples

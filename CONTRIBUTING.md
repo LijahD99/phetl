@@ -1,215 +1,157 @@
 # Contributing to PHETL
 
-Thank you for considering contributing to PHETL!
+Thank you for your interest in contributing to PHETL! This document provides guidelines for contributing to the project.
 
-## Development Principles
-
-This project follows:
-- **PSR-12** code style
-- **SOLID** principles
-- **TDD** (Test-Driven Development)
-
-## Getting Started
-
-1. Fork the repository
-2. Clone your fork
-3. Install dependencies:
-   ```bash
-   composer install
-   ```
-
-## Development Workflow
-
-### 1. Write Tests First (TDD)
-Before implementing a feature, write the test:
-
-```php
-// tests/Unit/Transform/Rows/RowFilterTest.php
-<?php
-
-declare(strict_types=1);
-
-namespace Phetl\Tests\Unit\Transform\Rows;
-
-use Phetl\Table;
-use PHPUnit\Framework\TestCase;
-
-final class RowFilterTest extends TestCase
-{
-    public function test_where_equals_filters_rows(): void
-    {
-        $table = Table::fromArray([
-            ['name', 'age', 'status'],
-            ['Alice', 30, 'active'],
-            ['Bob', 25, 'inactive'],
-            ['Charlie', 30, 'active'],
-        ]);
-
-        $result = $table->whereEquals('status', 'active');
-
-        $this->assertCount(2, iterator_to_array($result));
-    }
-}
-```
-
-### 2. Implement the Feature
-Follow SOLID principles:
-
-```php
-// Single Responsibility
-// Open/Closed
-// Liskov Substitution
-// Interface Segregation
-// Dependency Inversion
-```
-
-### 3. Run Quality Checks
+## Quick Start
 
 ```bash
-# Check code style (PSR-12)
-composer cs:check
+# Fork and clone the repository
+git clone https://github.com/YOUR_USERNAME/phetl.git
+cd phetl
 
-# Fix code style
-composer cs:fix
+# Install dependencies
+composer install
 
-# Run static analysis
-composer phpstan
-
-# Run tests
+# Run tests to verify setup
 composer test
 
 # Run all quality checks
 composer quality
 ```
 
-## Code Style
+## Development Standards
 
-We follow PSR-12 strictly:
+### Code Style
+
+We follow **PSR-12** coding standards:
 
 - `declare(strict_types=1);` at the top of every file
 - Type hints for all parameters and return types
 - No unused imports
 - Proper spacing and formatting
 
+### Quality Commands
+
+```bash
+composer cs:check    # Check code style
+composer cs:fix      # Fix code style issues
+composer phpstan     # Static analysis (max level)
+composer test        # Run all tests
+composer quality     # Run all checks
+```
+
 ## Testing
 
-- Write unit tests for all new functionality
-- Maintain 100% code coverage where practical
-- Use descriptive test method names
-- Follow the Arrange-Act-Assert pattern
+### Test-Driven Development (TDD)
+
+We encourage TDD workflow:
+
+1. **Write a failing test** that describes the behavior
+2. **Write minimal code** to make the test pass
+3. **Refactor** while keeping tests green
+
+### Test Structure
+
+Follow the Arrange-Act-Assert pattern:
 
 ```php
-public function test_specific_behavior_under_specific_conditions(): void
+public function test_filters_rows_matching_condition(): void
 {
     // Arrange
-    $table = $this->createTestTable();
+    $table = Table::fromArray([
+        ['name', 'status'],
+        ['Alice', 'active'],
+        ['Bob', 'inactive'],
+    ]);
 
     // Act
-    $result = $table->someOperation();
+    $result = $table->whereEquals('status', 'active');
 
     // Assert
-    $this->assertEquals($expected, $result);
+    $this->assertEquals(1, $result->count());
 }
 ```
 
-### Critical PHP Generator Gotcha
+### Test Naming
 
-**⚠️ Generator Key Collision with `yield from` and Numeric Keys**
-
-When using generators with `iterator_to_array()`, be aware that numeric keys can collide:
+Use descriptive test method names:
 
 ```php
-// ❌ BAD: Header at index 0 gets overwritten by first data row at index 0
-function processWithGenerator($data): Generator
-{
-    $header = ['id', 'name'];
-    yield $header; // Yields at index 0
+// Good
+public function test_aggregate_groups_by_multiple_fields(): void
+public function test_throws_exception_for_invalid_column(): void
 
-    foreach ($data as $row) {
-        yield $row; // Also starts at index 0, overwrites header!
-    }
-}
-
-$result = iterator_to_array(processWithGenerator($data));
-// Result: Missing header row! Only has data rows.
-
-// ✅ GOOD: Return arrays for operations that need to materialize data
-function processWithArray($data): array
-{
-    $result = [];
-    $result[] = ['id', 'name']; // Header safely stored
-
-    foreach ($data as $row) {
-        $result[] = $row; // Data appended sequentially
-    }
-
-    return $result;
-}
-
-// ✅ ALSO GOOD: Use explicit keys with generators
-function processWithExplicitKeys($data): Generator
-{
-    yield 'header' => ['id', 'name']; // Named key
-
-    foreach ($data as $row) {
-        yield $row; // Numeric keys for data
-    }
-}
+// Avoid
+public function testAggregate(): void
+public function test1(): void
 ```
 
-**When to use Generators vs Arrays:**
-- **Use Generators**: Streaming operations, large datasets, memory efficiency is critical
-- **Use Arrays**: Operations requiring sorting, grouping, or random access
-- **Discovered during**: Window functions implementation (percentRank, denseRank helper functions)
+## Architecture
 
-## SOLID Principles Examples
+### Project Structure
 
-### Single Responsibility Principle
-Each class should have one reason to change:
+```
+src/
+├── Table.php              # Main fluent API class
+├── Extract/Extractors/    # Data sources (CSV, JSON, etc.)
+├── Load/Loaders/          # Data destinations
+├── Transform/             # Transformation operations
+│   ├── Rows/              # Row-level operations
+│   ├── Columns/           # Column-level operations
+│   ├── Values/            # Value-level operations
+│   ├── Joins/             # Table joining
+│   ├── Aggregation/       # Grouping and aggregation
+│   └── Validation/        # Data validation
+└── Contracts/             # Interfaces
+```
+
+### Design Principles
+
+**Single Responsibility**: Each class has one reason to change.
 
 ```php
 // Good: Separate concerns
-class CsvExtractor implements ExtractorInterface { }
-class CsvLoader implements LoaderInterface { }
-
-// Bad: Mixed concerns
-class CsvHandler { } // Does both read and write
+class CsvExtractor { }  // Only extracts from CSV
+class CsvLoader { }     // Only loads to CSV
 ```
 
-### Open/Closed Principle
-Open for extension, closed for modification:
+**Open/Closed**: Extend via interfaces, not modification.
 
 ```php
-// Use interfaces and abstract classes
 interface ExtractorInterface {
-    public function extract(): iterable;
+    public function extract(): array;
 }
 
-// New extractors extend without modifying existing code
-class RestApiExtractor implements ExtractorInterface { }
-```
-
-### Interface Segregation Principle
-Clients shouldn't depend on interfaces they don't use:
-
-```php
-// Good: Specific interfaces
-interface Readable { }
-interface Writable { }
-
-// Bad: Fat interface
-interface DataSource extends Readable, Writable, Seekable, Cacheable { }
+// New extractors implement the interface
+class XmlExtractor implements ExtractorInterface { }
 ```
 
 ## Pull Request Process
 
-1. Create a feature branch from `main`
-2. Write tests for your changes (TDD)
-3. Implement your changes
-4. Ensure all quality checks pass
-5. Update documentation if needed
-6. Submit a pull request with clear description
+1. **Create a feature branch** from `main`
+2. **Write tests** for your changes
+3. **Implement** your changes
+4. **Run quality checks**: `composer quality`
+5. **Update documentation** if needed
+6. **Submit PR** with clear description
+
+### PR Checklist
+
+- [ ] Tests pass (`composer test`)
+- [ ] Code style passes (`composer cs:check`)
+- [ ] Static analysis passes (`composer phpstan`)
+- [ ] New features have tests
+- [ ] Documentation updated if needed
+
+## Reporting Issues
+
+When reporting bugs, please include:
+
+- PHP version
+- PHETL version
+- Minimal code to reproduce
+- Expected vs actual behavior
 
 ## Questions?
 
-Feel free to open an issue for discussion!
+Open an issue with the "question" label or start a discussion.
