@@ -278,6 +278,7 @@ foreach ($customerSummary->head(3)->toArray() as $i => $row) {
 echo "\n";
 
 echo "Top Products by Revenue:\n";
+// Row format: product_id, name, category, units_sold, revenue, profit
 foreach ($productPerformance->head(3)->toArray() as $i => $row) {
     if ($i > 0) {
         echo sprintf("  %d. %s - \$%.2f revenue, \$%.2f profit\n",

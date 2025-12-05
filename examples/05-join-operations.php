@@ -220,8 +220,11 @@ $customerRevenue = $enrichedOrders
     ->removeColumns('customer_id')
     ->sortByDesc('total_revenue');
 
+// Note: toArray() returns rows as indexed arrays matching column order
+// For production code, consider using named keys or json_encode for output
 foreach ($customerRevenue->toArray() as $i => $row) {
     if ($i === 0) {
+        // Header row: name | total_orders | total_revenue | avg_order_value
         echo sprintf("  %-20s | %-6s | %-10s | %s\n", 
             $row[0], $row[1], $row[2], $row[3]);
         echo "  " . str_repeat('-', 55) . "\n";
