@@ -1,0 +1,27 @@
+[
+    {
+        "product": "Widget B",
+        "category": "Electronics",
+        "revenue": 3749.25
+    },
+    {
+        "product": "Widget A",
+        "category": "Electronics",
+        "revenue": 2999
+    },
+    {
+        "product": "Gadget Y",
+        "category": "Accessories",
+        "revenue": 2248.5
+    },
+    {
+        "product": "Tool Z",
+        "category": "Hardware",
+        "revenue": 1999.5
+    },
+    {
+        "product": "Gadget X",
+        "category": "Accessories",
+        "revenue": 1998
+    }
+]
